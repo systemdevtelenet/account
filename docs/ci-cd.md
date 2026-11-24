@@ -28,7 +28,7 @@ Add these under **Settings → Secrets and variables → Actions**:
 | `VERCEL_ORG_ID` | Vercel organization or team ID |
 | `VERCEL_PROJECT_ID` | Vercel project ID |
 
-The workflow also declares `preview` and `production` GitHub environments. Configure any environment-specific protection rules in **Settings → Environments** if needed.
+The workflow also declares `preview` and `production` GitHub environments. Configure any environment-specific protection rules in **Settings → Environments** if needed. Deploy jobs skip themselves with a summary note when any of the three Vercel secrets is missing, so checks stay green until deployment is configured.
 
 Vercel supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` to the deployed build through the Vercel project environment. The CI verification job uses harmless placeholder values so it can build without production secrets.
 
