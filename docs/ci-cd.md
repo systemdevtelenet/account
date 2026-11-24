@@ -1,12 +1,22 @@
 # CI/CD
 
-The GitHub Actions workflow lives at `.github/workflows/ci-cd.yml`.
+The GitHub Actions workflows live in `.github/workflows/`.
 
-## What it does
+## What the main workflow does
+
+`.github/workflows/ci-cd.yml`:
 
 - On every pull request into `main`, it runs lint, TypeScript checking, tests, and a production build. Same-repository pull requests also get a Vercel preview deployment.
 - On every push to `main`, it runs the same checks and then deploys to Vercel production.
 - Pull requests from forks run checks only. They do not get access to deployment secrets or preview deployments.
+
+## Other workflows
+
+| Workflow | Trigger | Purpose |
+| --- | --- | --- |
+| `nightly-checks.yml` | Daily at 03:17 UTC, or manual | Runs the full `npm run ci` sequence on the default branch. |
+| `deploy-manual.yml` | Manual `workflow_dispatch` | Deploys `preview` or `production` on demand using the same Vercel secrets. |
+| `release.yml` | Push of a `v*` tag | Creates a GitHub Release with generated notes for the tag. |
 
 ## Required GitHub secrets
 
