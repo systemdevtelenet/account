@@ -30,11 +30,21 @@ Vercel supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_
 
 ## Local equivalents
 
+Run the same sequence as the CI `verify` job:
+
+```bash
+npm run ci
+```
+
+Or run each step individually:
+
 ```bash
 npm run lint
 npm run typecheck
 npm test
 npm run build
 ```
+
+`npm run typecheck` runs `next typegen` before `tsc --noEmit`, because Next.js route helpers such as `LayoutProps` are generated and are not present in a clean checkout.
 
 If you host somewhere other than Vercel, keep the `verify` job and replace the two deploy jobs with your platform's build and release steps.
