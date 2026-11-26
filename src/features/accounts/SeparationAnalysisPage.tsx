@@ -23,16 +23,16 @@ export default function SeparationAnalysisPage() {
   const darkMode = useDashboardTheme();
   const sidebar = useAccountSidebar();
   const panelClass = darkMode
-    ? "border-[#2a3b5c] bg-[#172746] text-[#edf4ff]"
-    : "border-[#e7edf5] bg-white text-[#182746]";
-  const mutedClass = darkMode ? "text-[#9aacc5]" : "text-[#687993]";
+    ? "border-[var(--color-rule-dark)] bg-[var(--color-panel-dark)] text-[var(--color-ink-dark)]"
+    : "border-[var(--color-rule-card)] bg-white text-[var(--color-ink-strong)]";
+  const mutedClass = darkMode ? "text-[var(--color-muted-dark-soft)]" : "text-[var(--color-muted-2)]";
 
   return (
     <main
       data-account-theme={darkMode ? "dark" : "light"}
       data-sidebar-collapsed={sidebar.collapsed}
       data-sidebar-open={sidebar.mobileOpen}
-      className={`account-screen min-h-screen ${darkMode ? "bg-[#101c39]" : "bg-[#f5f8fc]"}`}
+      className={`account-screen min-h-screen ${darkMode ? "bg-[var(--color-night)]" : "bg-[var(--color-paper)]"}`}
     >
       <AccountSidebar
         darkMode={darkMode}
@@ -41,13 +41,13 @@ export default function SeparationAnalysisPage() {
         onClose={sidebar.closeMobile}
       />
       <div className="lg:pl-[220px]">
-        <section className={`account-hero relative border-b px-4 pt-4 pb-8 sm:px-7 sm:pt-5 sm:pb-9 ${darkMode ? "border-[#3d6488] bg-[#234d73] text-[#edf4ff]" : "border-[#d9e3ec] bg-white text-[#183653]"}`}>
+        <section className={`account-hero relative border-b px-4 pt-4 pb-8 sm:px-7 sm:pt-5 sm:pb-9 ${darkMode ? "border-[var(--color-rule-accent)] bg-[var(--color-hero-start)] text-[var(--color-ink-dark)]" : "border-[var(--color-rule-soft-2)] bg-white text-[var(--color-hero-deep)]"}`}>
           <div className="relative z-10">
             <AccountHeader initialDarkMode={darkMode} onMenuClick={sidebar.toggle} menuExpanded={sidebar.expanded} />
             <div className="account-page-heading mt-1 flex min-h-[92px] flex-wrap items-center justify-between gap-3 sm:min-h-[108px]">
               <div>
                 <h1 className="text-[29px] font-bold leading-tight sm:text-[34px]">{data?.accountName ?? "Separation analysis"}</h1>
-                <p className={`mt-2 max-w-[60ch] text-sm leading-6 ${darkMode ? "text-[#c5d4e2]" : "text-[#4e6780]"}`}>
+                <p className={`mt-2 max-w-[60ch] text-sm leading-6 ${darkMode ? "text-[var(--color-muted-dark-3)]" : "text-[var(--color-muted-dim-3)]"}`}>
                   Onboarding, offboarding, and workforce changes for this account.
                 </p>
               </div>
@@ -75,7 +75,7 @@ export default function SeparationAnalysisPage() {
             <h2 className="text-sm font-bold">Recorded movement by type</h2>
             <p className={`mt-1 text-xs ${mutedClass}`}>Events from employee separation history this year. Reasons are not recorded in this data source.</p>
             {data?.movements.length ? (
-              <ul className="mt-4 divide-y divide-[#d8e1eb]">
+              <ul className="mt-4 divide-y divide-[var(--color-rule)]">
                 {data.movements.map((movement) => (
                   <li key={movement.label} className="flex items-center justify-between py-3 text-sm">
                     <span>{movement.label}</span>
@@ -107,13 +107,13 @@ function SummaryCard({
   darkMode: boolean;
 }) {
   return (
-    <article className={`flex items-center gap-3 rounded-xl border p-4 shadow-sm ${darkMode ? "border-[#2a3b5c] bg-[#172746]" : "border-[#e7edf5] bg-white"}`}>
+    <article className={`flex items-center gap-3 rounded-xl border p-4 shadow-sm ${darkMode ? "border-[var(--color-rule-dark)] bg-[var(--color-panel-dark)]" : "border-[var(--color-rule-card)] bg-white"}`}>
       <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full" style={{ backgroundColor: `${color}1b`, color }}>
         {icon}
       </span>
       <div className="min-w-0">
-        <p className={`text-xs font-medium ${darkMode ? "text-[#d9e5f7]" : "text-[#687993]"}`}>{label}</p>
-        <p className={`mt-1 truncate text-xl font-bold tabular-nums ${darkMode ? "text-white" : "text-[#182746]"}`}>{value}</p>
+        <p className={`text-xs font-medium ${darkMode ? "text-[var(--color-ink-dark-soft)]" : "text-[var(--color-muted-2)]"}`}>{label}</p>
+        <p className={`mt-1 truncate text-xl font-bold tabular-nums ${darkMode ? "text-white" : "text-[var(--color-ink-strong)]"}`}>{value}</p>
       </div>
     </article>
   );

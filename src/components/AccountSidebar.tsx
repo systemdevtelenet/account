@@ -86,7 +86,7 @@ export default function AccountSidebar({
           href="/dashboard"
           aria-label="Operation System home"
           title="Operation System home"
-          className={`account-sidebar-main-link mt-5 flex items-center gap-2 px-2 text-[11px] font-semibold ${darkMode ? "text-[#aabbd5]" : "text-[#52627d]"}`}
+          className={`account-sidebar-main-link mt-5 flex items-center gap-2 px-2 text-[11px] font-semibold ${darkMode ? "text-[var(--color-muted-dark)]" : "text-[var(--color-muted-dim-4)]"}`}
         >
           <ArrowLeft size={16} /> <span className="account-sidebar-label">Operation System home</span>
         </Link>
@@ -101,8 +101,8 @@ export default function AccountSidebar({
               isOverviewActive
                 ? "bg-white/20 text-white"
                 : darkMode
-                  ? "text-[#c3d0e4] hover:bg-white/5"
-                  : "hover:bg-[#f3f7fc]"
+                  ? "text-[var(--color-ink-dark-2)] hover:bg-white/5"
+                  : "hover:bg-[var(--color-table-head-light)]"
             }`}
           >
             <Home size={18} /> <span className="account-sidebar-label">Core Staffing</span>
@@ -116,8 +116,8 @@ export default function AccountSidebar({
               isSeparationActive
                 ? "bg-white/20 text-white"
                 : darkMode
-                  ? "text-[#c3d0e4] hover:bg-white/5"
-                  : "hover:bg-[#f3f7fc]"
+                  ? "text-[var(--color-ink-dark-2)] hover:bg-white/5"
+                  : "hover:bg-[var(--color-table-head-light)]"
             }`}
           >
             <BarChart3 size={18} /> <span className="account-sidebar-label">Separation Analysis</span>
@@ -131,8 +131,8 @@ export default function AccountSidebar({
               isRosterActive
                 ? "bg-white/20 text-white"
                 : darkMode
-                  ? "text-[#c3d0e4] hover:bg-white/5"
-                  : "hover:bg-[#f3f7fc]"
+                  ? "text-[var(--color-ink-dark-2)] hover:bg-white/5"
+                  : "hover:bg-[var(--color-table-head-light)]"
             }`}
           >
             <UsersRound size={18} />
@@ -143,7 +143,7 @@ export default function AccountSidebar({
             aria-label="Settings"
             aria-current={isSettingsActive ? "page" : undefined}
             title="Settings"
-            className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 ${isSettingsActive ? "bg-white/20 text-white" : darkMode ? "text-[#c3d0e4] hover:bg-white/10" : "text-white/90 hover:bg-white/10"}`}
+            className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 ${isSettingsActive ? "bg-white/20 text-white" : darkMode ? "text-[var(--color-ink-dark-2)] hover:bg-white/10" : "text-white/90 hover:bg-white/10"}`}
           >
             <Settings size={18} /> <span className="account-sidebar-label">Settings</span>
           </Link>
@@ -157,7 +157,7 @@ export default function AccountSidebar({
             <CircleHelp className="text-white" size={18} />
             <div>
               <p className="text-[10px] font-bold">Need Help?</p>
-              <p className="text-[9px] text-[#8592a8]">Contact Support</p>
+              <p className="text-[9px] text-[var(--color-muted-dim)]">Contact Support</p>
             </div>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function AccountSidebar({
       {/* Mobile navigation reuses the same destinations and active-route state as desktop. */}
       <nav
         aria-label="Account navigation"
-        className="account-mobile-nav fixed right-3 bottom-3 left-3 z-50 grid grid-cols-4 gap-1 rounded-xl border px-2 py-2 shadow-[0_8px_24px_rgba(8,29,67,0.16)] lg:hidden"
+        className="account-mobile-nav fixed right-3 bottom-3 left-3 z-50 grid grid-cols-4 gap-1 rounded-xl border px-2 py-2 shadow-[0_8px_24px_var(--color-mobile-nav-shadow)] lg:hidden"
       >
         <Link
           href={overviewPath}

@@ -1,8 +1,8 @@
-/* Hallmark · shape: app screen · genre: modern-minimal · theme: brand · redesign: full
+/* Hallmark · check: built: Hallmark · theme: brand · redesign: polish · shape: app screen · genre: modern-minimal
  * paper: soft white · accent: CTNP blue · display: Geist · body: Geist
  * nav: kept · signature: workforce and roster views · states: light and dark
- * axes: soft white/Geist/CTNP blue · posture: left-biased · contrast: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: H, make account data the first read */
+ * axes: soft white/Geist/CTNP blue · posture: left-biased · contrast: pass · v2.0.0
+ * review: finish-review: in-thread · recapture: render tier unavailable · static source pass */
 /* Hallmark · dismissed 40 · panel and input roles resolve to #172343 on #ffffff (15:1); linter misses var references */
 @import "tailwindcss";
 @import "./tokens.css";
@@ -146,7 +146,7 @@ a:active {
   min-height: 56px;
   margin: 0;
   gap: var(--space-md);
-  padding: var(--space-xs) 1rem;
+  padding: var(--space-xs) var(--space-md);
   border-bottom: 0;
   background-color: var(--color-panel);
   color: var(--color-ink);
@@ -397,7 +397,7 @@ a:active {
   border-radius: var(--radius-card);
   background: var(--color-dashboard-hero);
   color: var(--color-dashboard-hero-ink);
-  box-shadow: 0 1px 2px rgb(23 35 67 / 12%);
+  box-shadow: 0 1px 2px var(--color-metric-shadow);
 }
 
 .dashboard-metric-mark {
@@ -410,11 +410,11 @@ a:active {
 }
 
 .dashboard-metric-change-positive {
-  color: #a7f3d0;
+  color: var(--color-positive-soft);
 }
 
 .dashboard-metric-change-negative {
-  color: #fecdd3;
+  color: var(--color-negative-soft);
 }
 
 .dashboard-home > section:nth-of-type(2) {
@@ -453,7 +453,7 @@ a:active {
 .dashboard-home .dashboard-analytics {
   background: var(--color-paper);
   color: var(--color-ink);
-  padding-top: 1.5rem;
+  padding-top: var(--space-lg);
 }
 
 .dashboard-home .dashboard-overview-metric {
@@ -504,6 +504,7 @@ a:active {
   background: var(--color-panel);
   color: var(--color-ink);
   box-shadow: var(--shadow-panel);
+  white-space: nowrap;
 }
 
 .dashboard-account-card::before {
@@ -635,7 +636,7 @@ a:active {
 
 @media (max-width: 40rem) {
   .account-header {
-    padding-inline: 1rem;
+    padding-inline: var(--space-md);
   }
 
   .account-content {
@@ -730,19 +731,23 @@ a:active {
     bottom: 0;
     left: 0;
     display: flex;
-    width: min(280px, calc(100vw - 40px));
+    width: 100%;
+    max-width: 280px;
     flex-direction: column;
     overflow-y: auto;
     padding: var(--space-lg) var(--space-md);
     border-right: 1px solid var(--color-rule);
     box-shadow: var(--shadow-header);
+  }
+
+  [data-js] .account-screen .account-sidebar {
     opacity: 0;
     pointer-events: none;
     transform: translateX(-100%);
     transition: transform var(--dur-short) var(--ease-out), opacity var(--dur-short) var(--ease-out);
   }
 
-  .account-screen[data-sidebar-open="true"] .account-sidebar {
+  [data-js] .account-screen[data-sidebar-open="true"] .account-sidebar {
     opacity: 1;
     pointer-events: auto;
     transform: translateX(0);
@@ -755,12 +760,15 @@ a:active {
     display: block;
     border: 0;
     background: var(--color-scrim);
+  }
+
+  [data-js] .account-sidebar-backdrop {
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--dur-short) var(--ease-out);
   }
 
-  .account-screen[data-sidebar-open="true"] .account-sidebar-backdrop {
+  [data-js] .account-screen[data-sidebar-open="true"] .account-sidebar-backdrop {
     opacity: 1;
     pointer-events: auto;
   }
@@ -774,16 +782,13 @@ a:active {
     transition-delay: 0s;
   }
 
-  .account-screen[data-sidebar-collapsed="true"] .account-sidebar-label {
+  [data-js] .account-screen[data-sidebar-collapsed="true"] .account-sidebar-label {
     position: absolute;
     left: calc(100% + 8px);
     width: max-content;
     opacity: 0;
     transform: translateX(-5px);
     visibility: hidden;
-  }
-
-  .account-screen[data-sidebar-collapsed="true"] .account-sidebar-label {
     transition-delay: 0s, 0s, var(--dur-short);
   }
 
@@ -791,7 +796,7 @@ a:active {
     transition: opacity var(--dur-short) var(--ease-out), transform var(--dur-short) var(--ease-out);
   }
 
-  .account-screen[data-sidebar-collapsed="true"] .account-help-card {
+  [data-js] .account-screen[data-sidebar-collapsed="true"] .account-help-card {
     opacity: 0;
     pointer-events: none;
     transform: translateY(5px);
@@ -878,4 +883,61 @@ a:active {
 [data-account-theme="dark"] .account-table > div:first-child {
   background-color: var(--color-panel-dark);
   color: var(--color-ink-dark);
+}
+
+.account-settings-layout .settings-nav-button {
+  position: relative;
+  padding-left: var(--space-lg);
+}
+
+.account-settings-layout .settings-nav-button[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  left: var(--space-xs);
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background-color: var(--settings-accent);
+  transform: translateY(-50%);
+}
+
+.account-settings-layout .settings-theme:hover,
+.account-settings-layout .settings-swatch:hover,
+.account-settings-layout .settings-save:hover {
+  opacity: 0.9;
+}
+
+.account-settings-layout .settings-theme:active,
+.account-settings-layout .settings-swatch:active,
+.account-settings-layout .settings-save:active {
+  transform: translateY(1px);
+}
+
+.account-settings-layout .settings-option:hover,
+.account-settings-layout .settings-toggle:hover {
+  background-color: var(--color-status-well);
+}
+
+.account-settings-layout .settings-actions {
+  border-top: 1px solid var(--color-rule-soft);
+  padding-top: var(--space-md);
+}
+
+.account-settings-layout .settings-save {
+  box-shadow: 0 6px 16px var(--color-shadow-menu);
+}
+
+[data-account-theme="dark"] .account-settings-layout .settings-option,
+[data-account-theme="dark"] .account-settings-layout .settings-toggle {
+  border-color: var(--color-rule-dark);
+}
+
+[data-account-theme="dark"] .account-settings-layout .settings-option:hover,
+[data-account-theme="dark"] .account-settings-layout .settings-toggle:hover {
+  background-color: var(--color-rule-dark);
+}
+
+[data-account-theme="dark"] .account-settings-layout .settings-actions {
+  border-color: var(--color-rule-dark);
 }

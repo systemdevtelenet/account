@@ -1,25 +1,42 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import {
   Bell,
-  Building2,
   CircleUserRound,
   Eye,
-  LockKeyhole,
   Monitor,
   Moon,
   Palette,
-  UsersRound,
   Sun,
 } from "lucide-react";
 import AccountSidebar from "../../components/AccountSidebar";
 import AccountHeader from "./AccountHeader";
 import useAccountSidebar from "./useAccountSidebar";
+import useCurrentRole from "../auth/useCurrentRole";
+import useAccountSettings from "./useAccountSettings";
+import { ACCENT_COLORS, type AccountSettings } from "./accountSettings";
 import useDashboardTheme, {
   THEME_CHANGE_EVENT,
   THEME_STORAGE_KEY,
 } from "../dashboard/useDashboardTheme";
+
+type ThemeChoice = AccountSettings["appearance"]["theme"];
+type Feedback = { text: string; tone: "success" | "error" };
+
+type TextField = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: "text" | "email";
+};
+
+type NotificationOption = {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+};
 
 /** Shared shell for account settings routes. */
 export default function AccountSectionPage() {
@@ -27,14 +44,14 @@ export default function AccountSectionPage() {
   const sidebar = useAccountSidebar();
   const title = "Settings";
   const description = "Manage account preferences, alerts, and access controls.";
-  const mutedClass = darkMode ? "text-[#9aacc5]" : "text-[#687993]";
+  const mutedClass = darkMode ? "text-[var(--color-muted-dark-soft)]" : "text-[var(--color-muted-2)]";
 
   return (
     <main
       data-account-theme={darkMode ? "dark" : "light"}
       data-sidebar-collapsed={sidebar.collapsed}
       data-sidebar-open={sidebar.mobileOpen}
-      className={`account-screen min-h-screen ${darkMode ? "bg-[#101c39]" : "bg-[#f5f8fc]"}`}
+      className={`account-screen min-h-screen ${darkMode ? "bg-[var(--color-night)]" : "bg-[var(--color-paper)]"}`}
     >
       <AccountSidebar
         darkMode={darkMode}
@@ -46,8 +63,8 @@ export default function AccountSectionPage() {
         <section
           className={`account-hero relative px-4 pt-4 pb-8 text-white sm:px-7 ${
             darkMode
-              ? "bg-[linear-gradient(119deg,#234d73,#2F6798)]"
-              : "bg-[linear-gradient(119deg,#2F6798,#5F8DB5)]"
+              ? "bg-[linear-gradient(119deg,var(--color-hero-start),var(--color-accent))]"
+              : "bg-[linear-gradient(119deg,var(--color-accent),var(--color-blue-muted))]"
           }`}
         >
           <div className="relative z-10">
@@ -84,77 +101,141 @@ function SettingsContent({
   darkMode: boolean;
   mutedClass: string;
 }) {
+  const params = useParams<{ accountId?: string | string[] }>();
+  const routeAccountId = Array.isArray(params.accountId)
+    ? params.accountId[0]
+    : params.accountId;
+  const accountId = routeAccountId || "default";
+  const identity = useCurrentRole();
+  const settingsPrefill = {
+    loaded: identity.loaded,
+    theme: darkMode ? ("dark" as const) : ("light" as const),
+    displayName: identity.displayName,
+    role: identity.roleLabel,
+    email: identity.email,
+  };
+  const {
+    settings,
+    setSettings,
+    loaded,
+    isDirty,
+    saveSettings: saveBrowserSettings,
+  } = useAccountSettings(accountId, settingsPrefill);
+
   const [activeSetting, setActiveSetting] = useState("Appearance");
-  const [savedMessage, setSavedMessage] = useState("");
-  const [themeChoice, setThemeChoice] = useState<"light" | "dark" | "system">(darkMode ? "dark" : "light");
-  const [appliedTheme, setAppliedTheme] = useState<"light" | "dark" | null>(null);
-  const [accentColor, setAccentColor] = useState("#2F6798");
-  const [compactMode, setCompactMode] = useState(false);
-  const [showPreviews, setShowPreviews] = useState(true);
-  const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const settings = [
+  const [feedback, setFeedback] = useState<Feedback>({ text: "", tone: "success" });
+  const { appearance, profile, notifications } = settings;
+
+  const settingsNav = [
     { title: "Appearance", icon: <Palette size={18} /> },
     { title: "Profile", icon: <CircleUserRound size={18} /> },
-    { title: "Account", icon: <Building2 size={18} /> },
     { title: "Notifications", icon: <Bell size={18} /> },
-    { title: "Security", icon: <LockKeyhole size={18} /> },
-    { title: "Workforce Preferences", icon: <UsersRound size={18} /> },
   ];
+  const statusText = feedback.text
+    || (!loaded ? "Loading preferences…" : isDirty ? "Unsaved changes" : "Preferences are saved in this browser.");
+  const statusClass = feedback.text
+    ? (feedback.tone === "error" ? "text-[var(--color-danger-bright)]" : "text-[var(--color-positive-mid)]")
+    : mutedClass;
 
-  const saveSettings = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // Other settings remain local preview state; only theme choice is persisted below.
-    setSavedMessage(`${activeSetting} settings saved.`);
-  };
+  function showFeedback(text: string, tone: Feedback["tone"] = "success") {
+    setFeedback({ text, tone });
+  }
 
-  // Apply theme side effects after render instead of mutating browser globals
-  // from the click handler. The null state keeps the initial render untouched.
+  function updateAppearance(patch: Partial<AccountSettings["appearance"]>) {
+    setSettings((previous) => ({
+      ...previous,
+      appearance: { ...previous.appearance, ...patch },
+    }));
+  }
+
+  function updateProfile(patch: Partial<AccountSettings["profile"]>) {
+    setSettings((previous) => ({
+      ...previous,
+      profile: { ...previous.profile, ...patch },
+    }));
+  }
+
+  function updateNotifications(patch: Partial<AccountSettings["notifications"]>) {
+    setSettings((previous) => ({
+      ...previous,
+      notifications: { ...previous.notifications, ...patch },
+    }));
+  }
+
+  // Apply the selected theme after render, and keep "System" in sync with the
+  // operating system instead of resolving it once at click time.
   useEffect(() => {
-    if (!appliedTheme) return;
+    if (!loaded) return;
 
-    try {
-      window.localStorage.setItem(THEME_STORAGE_KEY, appliedTheme);
-    } catch {
-      // Storage can be blocked; the cookie and event still apply the choice.
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const chosenTheme = appearance.theme;
+    const applyTheme = () => {
+      const resolved: "light" | "dark" = chosenTheme === "system"
+        ? (media.matches ? "dark" : "light")
+        : chosenTheme;
+
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, resolved);
+      } catch {
+        // Storage can be blocked; the cookie and event still apply the choice.
+      }
+      document.cookie = `${THEME_STORAGE_KEY}=${resolved}; Path=/; Max-Age=31536000; SameSite=Lax`;
+      document.documentElement.dataset.theme = resolved;
+      document.documentElement.style.colorScheme = resolved;
+      window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+    };
+
+    applyTheme();
+
+    if (chosenTheme !== "system") return;
+    media.addEventListener("change", applyTheme);
+    return () => media.removeEventListener("change", applyTheme);
+  }, [appearance.theme, loaded]);
+
+  function saveSettings(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!loaded) {
+      showFeedback("Preferences are still loading. Try again in a moment.", "error");
+      return;
     }
-    document.cookie = `${THEME_STORAGE_KEY}=${appliedTheme}; Path=/; Max-Age=31536000; SameSite=Lax`;
-    document.documentElement.dataset.theme = appliedTheme;
-    document.documentElement.style.colorScheme = appliedTheme;
-    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
-  }, [appliedTheme]);
 
-  const changeTheme = (theme: "light" | "dark" | "system") => {
-    // Resolve the system option once, then share the selected value across app surfaces.
-    const resolvedTheme = theme === "system"
-      ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-      : theme;
+    if (activeSetting === "Profile" && profile.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)) {
+      showFeedback("Enter a valid email address before saving.", "error");
+      return;
+    }
 
-    setThemeChoice(theme);
-    setAppliedTheme(resolvedTheme);
-  };
+    const result = saveBrowserSettings();
+    if (!result.ok) {
+      showFeedback(result.error, "error");
+      return;
+    }
+
+    showFeedback(`${activeSetting} settings saved.`);
+  }
 
   return (
     <div
-      data-animations={animationsEnabled}
-      className={`account-settings-layout flex flex-col md:flex-row ${compactMode ? "gap-2" : "gap-4"}`}
-      style={{ "--settings-accent": accentColor } as React.CSSProperties}
+      data-animations={appearance.animationsEnabled}
+      className={`account-settings-layout flex flex-col md:flex-row ${appearance.compactMode ? "gap-2" : "gap-4"}`}
+      style={{ "--settings-accent": appearance.accentColor } as React.CSSProperties}
     >
       <nav className="w-full shrink-0 md:w-56">
         <p className={`px-3 pb-2 text-xs font-semibold ${mutedClass}`}>
           Settings
         </p>
         <div className="flex gap-1 overflow-x-auto md:block md:space-y-1">
-          {settings.map((setting) => (
+          {settingsNav.map((setting) => (
             <button
               key={setting.title}
               type="button"
               onClick={() => {
                 setActiveSetting(setting.title);
-                setSavedMessage("");
+                showFeedback("");
               }}
               aria-pressed={activeSetting === setting.title}
-              className={`flex min-w-max min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors md:w-full ${activeSetting === setting.title ? "bg-[#e8f0f6]" : `hover:bg-[#e8f0f6]/60 ${mutedClass}`}`}
-              style={activeSetting === setting.title ? { color: accentColor, backgroundColor: `${accentColor}22` } : undefined}
+              className={`settings-nav-button flex min-w-max min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors md:w-full ${activeSetting === setting.title ? "bg-[var(--color-status-well)]" : `hover:bg-[var(--color-status-well)]/60 ${mutedClass}`}`}
+              style={activeSetting === setting.title ? { color: appearance.accentColor } : undefined}
             >
               {setting.icon}
               {setting.title}
@@ -163,65 +244,77 @@ function SettingsContent({
         </div>
       </nav>
 
-      <form onSubmit={saveSettings} className={`min-w-0 flex-1 rounded-lg border sm:p-6 xl:grid xl:grid-cols-[minmax(0,1fr)_280px] ${compactMode ? "gap-3 p-3" : "gap-4 p-4"} ${darkMode ? "border-[#2a3b5c] bg-[#132442]" : "border-[#e7edf5] bg-[#fbfdff]"}`}>
+      <form onSubmit={saveSettings} className={`min-w-0 flex-1 rounded-lg border sm:p-6 xl:grid xl:grid-cols-[minmax(0,1fr)_280px] ${appearance.compactMode ? "gap-3 p-3" : "gap-4 p-4"} ${darkMode ? "border-[var(--color-rule-dark)] bg-[var(--color-night-panel)]" : "border-[var(--color-rule-card)] bg-[var(--color-status-well-bright)]"}`}>
         <div className="border-b border-inherit pb-4 xl:col-span-2">
           <h2 className="text-base font-bold">{activeSetting}</h2>
           <p className={`mt-1 text-sm ${mutedClass}`}>
             {activeSetting === "Appearance" && "Customize how the Operations and Attrition dashboard looks."}
             {activeSetting === "Profile" && "Manage your administrator profile information."}
-            {activeSetting === "Account" && "Manage this account's Operations and Attrition information."}
             {activeSetting === "Notifications" && "Choose which workforce events should notify you."}
-            {activeSetting === "Security" && "Protect your account and manage sign-in security."}
-            {activeSetting === "Workforce Preferences" && "Set defaults for roster and workforce reporting."}
           </p>
         </div>
 
         {activeSetting === "Appearance" && (
           <div className="mt-5 space-y-6">
             <div>
-              <h3 className="text-xs font-bold">Color Theme</h3>
-              <p className={`mt-1 text-[10px] ${mutedClass}`}>Choose the theme that works best for you.</p>
+              <h3 className="text-sm font-bold">Color Theme</h3>
+              <p className={`mt-1 text-xs ${mutedClass}`}>Choose the theme that works best for you.</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-3">
                 {[
-                  { name: "Light", value: "light", icon: <Sun size={16} /> },
-                  { name: "Dark", value: "dark", icon: <Moon size={16} /> },
-                  { name: "System", value: "system", icon: <Monitor size={16} /> },
+                  { name: "Light", value: "light" as const, icon: <Sun size={16} /> },
+                  { name: "Dark", value: "dark" as const, icon: <Moon size={16} /> },
+                  { name: "System", value: "system" as const, icon: <Monitor size={16} /> },
                 ].map((theme) => (
-                  <button key={theme.value} type="button" onClick={() => changeTheme(theme.value as "light" | "dark" | "system")} className="rounded-lg border p-3 text-left text-xs font-semibold" style={themeChoice === theme.value ? { borderColor: accentColor, boxShadow: `0 0 0 2px ${accentColor}33` } : undefined}>
+                  <button
+                    key={theme.value}
+                    type="button"
+                    onClick={() => updateAppearance({ theme: theme.value as ThemeChoice, themeSelected: true })}
+                    aria-pressed={appearance.theme === theme.value}
+                    className="settings-theme rounded-lg border p-3 text-left text-xs font-semibold"
+                    style={appearance.theme === theme.value ? { borderColor: appearance.accentColor, outline: `2px solid ${appearance.accentColor}` } : undefined}
+                  >
                     <span className="flex items-center gap-2">{theme.icon}{theme.name}</span>
-                    <span className={`mt-3 block h-12 rounded ${theme.value === "dark" ? "bg-[#101c39]" : theme.value === "light" ? "bg-[#f5f8fc]" : "bg-gradient-to-r from-[#f5f8fc] to-[#101c39]"}`} />
+                    <span className={`mt-3 block h-12 rounded ${theme.value === "dark" ? "bg-[var(--color-night)]" : theme.value === "light" ? "bg-[var(--color-paper)]" : "bg-gradient-to-r from-[var(--color-paper)] to-[var(--color-night)]"}`} />
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <h3 className="text-xs font-bold">Accent Color</h3>
-              <p className={`mt-1 text-[10px] ${mutedClass}`}>Choose your preferred accent color.</p>
+              <h3 className="text-sm font-bold">Accent Color</h3>
+              <p className={`mt-1 text-xs ${mutedClass}`}>Choose your preferred accent color.</p>
               <div className="mt-3 flex gap-3">
-                {["#2F6798", "#7448e8", "#10b981", "#e5a528", "#f05261", "#e83d91", "#18bcd4"].map((color) => (
-                  <button key={color} type="button" onClick={() => setAccentColor(color)} className={`h-5 w-5 rounded-full border-2 ${accentColor === color ? "border-white ring-2 ring-[#2F6798]" : "border-transparent"}`} style={{ backgroundColor: color }} aria-label={`Use ${color} accent`} />
+                {ACCENT_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => updateAppearance({ accentColor: color })}
+                    className={`settings-swatch h-6 w-6 rounded-full border-2 ${appearance.accentColor === color ? "border-white ring-2 ring-[var(--color-accent)]" : "border-transparent"}`}
+                    style={{ backgroundColor: color }}
+                    aria-label={`Use ${color} accent`}
+                    aria-pressed={appearance.accentColor === color}
+                  />
                 ))}
               </div>
             </div>
 
             <div>
-              <h3 className="text-xs font-bold">Display Options</h3>
-              <p className={`mt-1 text-[10px] ${mutedClass}`}>Customize interface elements and layout.</p>
-              <div className="mt-3 divide-y rounded-lg border border-[#dce6f1]">
-                <SettingToggle label="Compact mode" description="Reduce spacing for more content on screen." enabled={compactMode} onChange={setCompactMode} />
-                <SettingToggle label="Show data previews" description="Display quick previews in tables and cards." enabled={showPreviews} onChange={setShowPreviews} />
-                <SettingToggle label="Enable animations" description="Smooth transitions and micro-interactions." enabled={animationsEnabled} onChange={setAnimationsEnabled} />
+              <h3 className="text-sm font-bold">Display Options</h3>
+              <p className={`mt-1 text-xs ${mutedClass}`}>Customize interface elements and layout.</p>
+              <div className="mt-3 divide-y rounded-lg border border-[var(--color-rule-soft)]">
+                <SettingToggle label="Compact mode" description="Reduce spacing for more content on screen." enabled={appearance.compactMode} onChange={(compactMode) => updateAppearance({ compactMode })} />
+                <SettingToggle label="Show data previews" description="Display quick previews in tables and cards." enabled={appearance.showPreviews} onChange={(showPreviews) => updateAppearance({ showPreviews })} />
+                <SettingToggle label="Enable animations" description="Smooth transitions and micro-interactions." enabled={appearance.animationsEnabled} onChange={(animationsEnabled) => updateAppearance({ animationsEnabled })} />
               </div>
             </div>
           </div>
         )}
 
-        {activeSetting === "Appearance" && showPreviews && (
+        {activeSetting === "Appearance" && appearance.showPreviews && (
           <aside className="account-preview mt-5 p-3 xl:mt-5">
-            <div className="flex items-center gap-2 text-xs font-bold"><Eye size={16} style={{ color: accentColor }} /> Live Preview</div>
-            <p className={`mt-1 text-[10px] ${mutedClass}`}>This is a preview of how your themes look.</p>
-            <nav aria-label="Operations and attrition preview" className={`mt-4 divide-y rounded-lg border px-3 ${darkMode ? "border-[#2a3b5c]" : "border-[#dce6f1]"}`}>
+            <div className="flex items-center gap-2 text-xs font-bold"><Eye size={16} style={{ color: appearance.accentColor }} /> Live Preview</div>
+            <p className={`mt-1 text-xs ${mutedClass}`}>This is a preview of how your themes look.</p>
+            <nav aria-label="Operations and attrition preview" className={`mt-4 divide-y rounded-lg border px-3 ${darkMode ? "border-[var(--color-rule-dark)]" : "border-[var(--color-rule-soft)]"}`}>
               {[["Core staffing", "Overview"], ["Employee roster", "Roster"], ["Separation trends", "Analysis"]].map(([label, section]) => (
                 <div key={section} className="flex min-h-11 items-center justify-between gap-3 py-2 text-xs">
                   <span className="font-medium">{label}</span>
@@ -232,15 +325,38 @@ function SettingsContent({
           </aside>
         )}
 
-        {activeSetting === "Profile" && <SettingsFields fields={["Full name", "Role", "Email"]} />}
-        {activeSetting === "Account" && <SettingsFields fields={["Account name", "Organization", "Timezone"]} />}
-        {activeSetting === "Notifications" && <SettingsOptions options={["Roster updates", "Onboarding and offboarding alerts", "Separation analysis reports"]} />}
-        {activeSetting === "Security" && <SettingsFields fields={["Current password", "New password", "Confirm new password"]} passwordFields />}
-        {activeSetting === "Workforce Preferences" && <SettingsFields fields={["Default site", "Default department", "Report frequency"]} />}
+        {activeSetting === "Profile" && (
+          <SettingsFields fields={[
+            { label: "Full name", value: profile.fullName, onChange: (fullName) => updateProfile({ fullName }) },
+            { label: "Role", value: profile.role, onChange: (role) => updateProfile({ role }) },
+            { label: "Email", type: "email", value: profile.email, onChange: (email) => updateProfile({ email }) },
+          ]} />
+        )}
 
-        <div className="mt-6 flex items-center justify-between gap-3 xl:col-span-2">
-          <span role="status" aria-live="polite" className="text-sm text-[#12a66a]">{savedMessage}</span>
-          <button type="submit" className="rounded-lg px-4 py-2 text-xs font-bold text-white" style={{ backgroundColor: accentColor }}>Save Changes</button>
+        {activeSetting === "Notifications" && (
+          <SettingsOptions options={[
+            { label: "Roster updates", checked: notifications.rosterUpdates, onChange: (rosterUpdates) => updateNotifications({ rosterUpdates }) },
+            { label: "Onboarding and offboarding alerts", checked: notifications.onboardingAlerts, onChange: (onboardingAlerts) => updateNotifications({ onboardingAlerts }) },
+            { label: "Separation analysis reports", checked: notifications.separationReports, onChange: (separationReports) => updateNotifications({ separationReports }) },
+          ]} />
+        )}
+
+        <div className="settings-actions mt-6 flex items-center justify-between gap-3 xl:col-span-2">
+          <span
+            role="status"
+            aria-live="polite"
+            className={`text-sm ${statusClass}`}
+          >
+            {statusText}
+          </span>
+          <button
+            type="submit"
+            disabled={!isDirty}
+            className="settings-save rounded-lg px-4 py-2 text-xs font-bold text-white"
+            style={{ backgroundColor: appearance.accentColor }}
+          >
+            Save Changes
+          </button>
         </div>
         <style>{`[data-animations="false"] * { transition: none !important; animation: none !important; }`}</style>
       </form>
@@ -248,26 +364,38 @@ function SettingsContent({
   );
 }
 
-function SettingsFields({ fields, passwordFields = false }: { fields: string[]; passwordFields?: boolean }) {
+const inputClass = "mt-1 w-full rounded-lg border border-[var(--color-rule-soft)] bg-transparent px-3 py-2 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]";
+
+function SettingsFields({ fields }: { fields: TextField[] }) {
   return (
     <div className="mt-5 grid gap-4 sm:grid-cols-2">
       {fields.map((field, index) => (
-        <label key={field} className={`text-xs font-semibold ${index === 0 && fields.length === 3 ? "sm:col-span-2" : ""}`}>
-          {field}
-          <input type={passwordFields ? "password" : "text"} className="mt-1 w-full rounded-lg border border-[#dce6f1] bg-transparent px-3 py-2 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-[#2F6798]" />
+        <label key={field.label} className={`text-sm font-semibold ${index === 0 && fields.length === 3 ? "sm:col-span-2" : ""}`}>
+          {field.label}
+          <input
+            type={field.type ?? "text"}
+            value={field.value}
+            onChange={(event) => field.onChange(event.target.value)}
+            className={inputClass}
+          />
         </label>
       ))}
     </div>
   );
 }
 
-function SettingsOptions({ options }: { options: string[] }) {
+function SettingsOptions({ options }: { options: NotificationOption[] }) {
   return (
     <div className="mt-5 space-y-3">
       {options.map((option) => (
-        <label key={option} className="flex items-center justify-between rounded-lg border border-[#dce6f1] px-3 py-3 text-xs font-semibold">
-          {option}
-          <input type="checkbox" defaultChecked className="h-4 w-4 accent-[#2F6798]" />
+        <label key={option.label} className="settings-option flex items-center justify-between rounded-lg border border-[var(--color-rule-soft)] px-3 py-3 text-sm font-semibold">
+          {option.label}
+          <input
+            type="checkbox"
+            checked={option.checked}
+            onChange={(event) => option.onChange(event.target.checked)}
+            className="h-4 w-4 cursor-pointer accent-[var(--color-accent)]"
+          />
         </label>
       ))}
     </div>
@@ -286,16 +414,16 @@ function SettingToggle({
   onChange: (enabled: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-3 px-3 py-2.5">
+    <label className="settings-toggle flex cursor-pointer items-center justify-between gap-3 px-3 py-2.5">
       <span>
-        <span className="block text-[10px] font-semibold">{label}</span>
-        <span className="mt-0.5 block text-[9px] text-[#687993]">{description}</span>
+        <span className="block text-xs font-semibold">{label}</span>
+        <span className="mt-0.5 block text-[11px] text-[var(--color-muted-2)]">{description}</span>
       </span>
       <input
         type="checkbox"
         checked={enabled}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-4 w-4 accent-[#2F6798]"
+        className="h-4 w-4 cursor-pointer accent-[var(--color-accent)]"
       />
     </label>
   );

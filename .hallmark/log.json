@@ -1,0 +1,66 @@
+[
+ {
+  "date": "2026-11-26",
+  "mode": "redesign",
+  "depth": "polish",
+  "scope": "app",
+  "theme": "brand",
+  "shape": "app screen",
+  "axes": "soft white/Geist/CTNP blue",
+  "hero": "kept",
+  "nav": "kept",
+  "footer": "kept",
+  "imagery": "none; live settings state",
+  "entry": "settings",
+  "fingerprint": [
+   "app screen",
+   "top bar + left rail",
+   "left-biased",
+   "settings form",
+   "light/dark",
+   "live data"
+  ],
+  "sections": [
+   "appearance",
+   "profile",
+   "notifications"
+  ],
+  "signature": "live theme preview with saved-state footer",
+  "photos": [],
+  "waived": [],
+  "prompt": "polish settings"
+ },
+ {
+  "date": "2026-11-25",
+  "mode": "redesign",
+  "depth": "polish",
+  "scope": "app",
+  "theme": "brand",
+  "shape": "app screen",
+  "axes": "soft white/Geist/CTNP blue",
+  "hero": "kept",
+  "nav": "kept",
+  "footer": "kept",
+  "imagery": "none; live workforce data",
+  "entry": "workforce and roster views",
+  "fingerprint": [
+   "app screen",
+   "top bar + left rail",
+   "left-biased",
+   "table-first",
+   "dark/light",
+   "live data"
+  ],
+  "sections": [
+   "dashboard account grid",
+   "workforce snapshot",
+   "roster table",
+   "account overview",
+   "separation analysis"
+  ],
+  "signature": "account data and roster state shown in the project shell",
+  "photos": [],
+  "waived": [],
+  "prompt": "use $hallmark skill to enhance the UI"
+ }
+]

@@ -12,8 +12,8 @@ export default function NotificationPanel({ darkMode }: { darkMode: boolean }) {
   // Keep the panel in sync with notification updates while retaining the last response on refresh errors.
   const { data, loading, error } = useLiveWorkforceResource<NotificationData>("/api/notifications");
   // Use theme-aware colors for borders and secondary text.
-  const borderClass = darkMode ? "border-[#2b3e61]" : "border-[#edf1f7]";
-  const mutedClass = darkMode ? "text-[#aabbd5]" : "text-[#657796]";
+  const borderClass = darkMode ? "border-[var(--color-rule-menu)]" : "border-[var(--color-rule-row-2)]";
+  const mutedClass = darkMode ? "text-[var(--color-muted-dark)]" : "text-[var(--color-muted-on-dark)]";
 
 
   
@@ -23,12 +23,12 @@ export default function NotificationPanel({ darkMode }: { darkMode: boolean }) {
       role="dialog"
       aria-label="Notifications"
       aria-busy={loading}
-      className={`account-menu absolute top-[46px] right-0 z-50 w-[min(330px,calc(100vw-32px))] rounded-[14px] p-4 shadow-[0_16px_35px_#09276132] sm:right-[-55px] ${darkMode ? "bg-[#172746] text-[#edf4ff]" : "bg-white text-[#142044]"}`}
+      className={`account-menu absolute top-[46px] right-0 z-50 w-[min(330px,calc(100vw-32px))] rounded-[14px] p-4 shadow-[0_16px_35px_var(--color-shadow-menu-strong)] sm:right-[-55px] ${darkMode ? "bg-[var(--color-panel-dark)] text-[var(--color-ink-dark)]" : "bg-white text-[var(--color-notification-well)]"}`}
     >
       <div className={`flex items-center justify-between border-b pb-3 font-bold ${borderClass}`}>
         <span>Notifications</span>
         {/* Show the unread total only after notification data is available. */}
-        {data && <span className="rounded-[10px] bg-[#e8f0f6] px-2 py-1 text-[11px] text-[#2F6798]">{data.unreadCount} unread</span>}
+        {data && <span className="rounded-[10px] bg-[var(--color-status-well)] px-2 py-1 text-[11px] text-[var(--color-accent)]">{data.unreadCount} unread</span>}
       </div>
       {error && !data && <p role="alert" className={`py-4 text-xs ${mutedClass}`}>Notifications could not be loaded.</p>}
       {loading && !data && <p role="status" className={`py-4 text-xs ${mutedClass}`}>Loading notifications…</p>}
@@ -43,7 +43,7 @@ export default function NotificationPanel({ darkMode }: { darkMode: boolean }) {
             return (
               <li key={notification.notification_id} className={`border-b py-3 ${borderClass}`}>
                 <div className="flex gap-2.5">
-                  <span aria-hidden="true" className={`mt-1 h-2 w-2 shrink-0 rounded-full ${notification.read_at ? "bg-transparent" : "bg-[#2F6798]"}`} />
+                  <span aria-hidden="true" className={`mt-1 h-2 w-2 shrink-0 rounded-full ${notification.read_at ? "bg-transparent" : "bg-[var(--color-accent)]"}`} />
                   <div className="min-w-0">
                     {actionHref ? (
                       <a href={actionHref} className="block text-xs font-semibold hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">

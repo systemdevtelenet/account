@@ -1,8 +1,8 @@
-/* Hallmark · shape: app screen · genre: modern-minimal · theme: brand · redesign: full
+/* Hallmark · check: built: Hallmark · theme: brand · redesign: polish · shape: app screen · genre: modern-minimal
  * paper: soft white · accent: CTNP blue · display: Geist · body: Geist
  * nav: kept · signature: workforce and roster views · states: light and dark
- * axes: soft white/Geist/CTNP blue · posture: left-biased · contrast: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: H, use account data as the signature */
+ * axes: soft white/Geist/CTNP blue · posture: left-biased · contrast: pass · v2.0.0
+ * review: finish-review: in-thread · recapture: render tier unavailable · static source pass */
 /* Shared typography and brand values used throughout the application. */
 @theme static {
   --text-xs: 0.75rem;
@@ -69,6 +69,117 @@
   --z-toast: 500;
   --z-tooltip: 600;
   --rule-hair: 1px;
+  --color-brand-control: #055bbe1f;
+  --color-brand-field: #055bbe33;
+  --color-brand-control-hover: #055bbe61;
+  --color-scrim-soft: #071329aa;
+  --color-brand-tint: #0759b644;
+  --color-shadow-menu: #0927612c;
+  --color-shadow-menu-strong: #09276132;
+  --color-table-head-dark: #0b1428;
+  --color-brand-strong: #0b69c9;
+  --color-ink-deep: #0e1838;
+  --color-avatar-fallback: #101a32;
+  --color-night-soft: #101a39;
+  --color-night: #101c39;
+  --color-positive-bright: #10b981;
+  --color-positive-mid: #12a66a;
+  --color-night-panel: #132442;
+  --color-login-night: #132b43;
+  --color-notification-well: #142044;
+  --color-brand-bright: #1468d9;
+  --color-ink-menu: #17213b;
+  --color-login-ink: #17283b;
+  --color-login-primary-hover: #173b5d;
+  --color-ink-strong: #182746;
+  --color-hero-deep: #183653;
+  --color-cyan-mid: #18bcd4;
+  --color-hero-start: #234d73;
+  --color-login-primary: #244f78;
+  --color-rule-soft-dark: #25324d;
+  --color-login-ink-soft: #26384a;
+  --color-rule-table: #273653;
+  --color-rule-menu: #2b3e61;
+  --color-brand-soft-20: #2f67981f;
+  --color-brand-soft-33: #2f679833;
+  --color-brand-soft-61: #2f679861;
+  --color-rule-deep: #35486a;
+  --color-rule-accent: #3d6488;
+  --color-muted-dim-2: #4d5c75;
+  --color-muted-dim-3: #4e6780;
+  --color-muted-dim-4: #52627d;
+  --color-login-label: #536172;
+  --color-blue-muted: #5f8db5;
+  --color-login-action: #63768a;
+  --color-muted-empty: #637697;
+  --color-muted-on-dark: #657796;
+  --color-muted-dim-5: #667085;
+  --color-muted-2: #687993;
+  --color-login-muted: #6a7583;
+  --color-muted-3: #7182a0;
+  --color-violet-bright: #7448e8;
+  --color-login-help: #768394;
+  --color-muted-soft: #7b89a0;
+  --color-login-icon: #8190a0;
+  --color-muted-table: #8292ad;
+  --color-muted-dim: #8592a8;
+  --color-muted-dim-6: #8c98aa;
+  --color-warning-ink: #9a5b13;
+  --color-login-placeholder: #9aa4af;
+  --color-muted-dim-7: #9aa6b8;
+  --color-muted-dark-soft: #9aacc5;
+  --color-login-footer: #a2abb5;
+  --color-danger-text: #a72a3a;
+  --color-danger: #b4233d;
+  --color-warning: #b7791f;
+  --color-login-rule-hover: #b9c3cd;
+  --color-ink-dark-2: #c3d0e4;
+  --color-muted-dark-3: #c5d4e2;
+  --color-gold: #c8a54b;
+  --color-rule-empty: #ccd7e5;
+  --color-placeholder-on-brand: #d4eaff;
+  --color-danger-bright: #d71945;
+  --color-login-rule: #d7dde3;
+  --color-rule-active: #d7e4f8;
+  --color-rule-soft-2: #d9e3ec;
+  --color-ink-dark-soft: #d9e5f7;
+  --color-ink-on-brand: #d9edff;
+  --color-rule-soft: #dce6f1;
+  --color-login-divider: #e0e4e8;
+  --color-warning-bright: #e5a528;
+  --color-rule-soft-3: #e7edf4;
+  --color-rule-card: #e7edf5;
+  --color-magenta: #e83d91;
+  --color-status-well-card: #e9eef5;
+  --color-rule-row: #edf1f5;
+  --color-rule-row-2: #edf1f7;
+  --color-rose-bright: #f05261;
+  --color-danger-border-soft: #f1c8ce;
+  --color-table-head-light: #f3f7fc;
+  --color-danger-border: #f4c7cf;
+  --color-status-well-soft: #f4f7fb;
+  --color-control-paper: #f5f8ff;
+  --color-login-paper: #f8f8f6;
+  --color-table-head-cool: oklch(98.4% 0.004 250);
+  --color-login-hover: #fbfcfd;
+  --color-status-well-bright: #fbfdff;
+  --color-danger-wash-soft: #fff4f5;
+  --color-danger-wash: #fff5f6;
+  --color-drag-shadow: rgba(0,0,0,0.35);
+  --color-login-shadow: rgba(36,79,120,0.18);
+  --color-mobile-nav-shadow: rgba(8,29,67,0.16);
+  --color-metric-shadow: rgb(23 35 67 / 12%);
+  --color-positive-soft: #a7f3d0;
+  --color-negative-soft: #fecdd3;
+  --color-hero-radial-dark: #263a63;
+  --color-hero-mid-dark: #152442;
+  --color-hero-end-dark: #1d3156;
+  --color-hero-mid-light: #3d76a3;
+  --color-panel-shadow-soft: rgb(54 88 125 / 6%);
+  --color-trash-active-from: rgb(153 27 27 / 40%);
+  --color-trash-active-via: rgb(220 38 38 / 35%);
+  --color-trash-idle-from: rgb(185 28 28 / 30%);
+  --color-trash-idle-via: rgb(220 38 38 / 25%);
 }
 @media (max-width: 60rem) { :root { --gutter: 24px; --section-gap-s: 80px; --section-gap: 96px; --section-gap-l: 120px; } }
 @media (max-width: 40rem) { :root { --gutter: 16px; --section-gap-s: 56px; --section-gap: 72px; --section-gap-l: 96px; --gap-columns: 16px; } }

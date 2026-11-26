@@ -325,7 +325,7 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
                 data-account-id={account.shortTitle}
                 aria-label={`${account.fullTitle}, ${account.totalEmployees} currently assigned employees. Open account. Hold and drag to arrange or remove.`}
                 aria-grabbed={isDragging}
-                className={`dashboard-account-card group relative flex min-h-[144px] w-full select-none flex-col justify-between overflow-hidden border px-4 py-4 text-left transition-[border-color,box-shadow,transform] duration-150 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)] sm:px-5 ${draggingAccount ? "touch-none" : "touch-pan-y"
+                className={`dashboard-account-card group relative flex min-h-[144px] w-full select-none flex-col justify-between overflow-hidden whitespace-nowrap border px-4 py-4 text-left transition-[border-color,box-shadow,transform] duration-150 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)] sm:px-5 ${draggingAccount ? "touch-none" : "touch-pan-y"
                   } ${isDragging ? "scale-95 opacity-25" : ""}`}
                 key={account.shortTitle}
                 onClick={(event) => {
@@ -352,7 +352,7 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
                   <ArrowRight aria-hidden="true" className="dashboard-account-arrow shrink-0 transition-transform group-hover:translate-x-1" size={17} />
                 </span>
                 <span className="relative z-10 mt-3 block">
-                  <span className="dashboard-analytics-muted block text-xs font-medium">Currently assigned</span>
+                  <span className="dashboard-analytics-muted block text-xs font-medium">Assigned</span>
                   <span className="mt-1 flex items-baseline gap-2">
                     <strong className="text-[26px] font-semibold leading-none tabular-nums sm:text-[30px]">
                       {account.totalEmployees}
@@ -367,8 +367,8 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
           {visibleAccounts.length === 0 && (
             <div
               className={`col-span-full rounded-xl border border-dashed px-6 py-14 text-center text-sm ${darkMode
-                  ? "border-[#35486a] text-[#aabbd5]"
-                  : "border-[#ccd7e5] text-[#637697]"
+                  ? "border-[var(--color-rule-deep)] text-[var(--color-muted-dark)]"
+                  : "border-[var(--color-rule-empty)] text-[var(--color-muted-empty)]"
                 }`}
             >
               {error
@@ -387,9 +387,9 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
       {draggingAccount && (
         <>
           <div
-            className={`pointer-events-none fixed z-[220] flex h-24 w-52 -translate-x-1/2 -translate-y-1/2 rotate-2 flex-col items-center justify-center rounded-2xl border shadow-[0_22px_55px_rgba(0,0,0,0.35)] ${darkMode
-                ? "border-white/20 bg-[#182746] text-white"
-                : "border-slate-200 bg-white text-[#0e1838]"
+            className={`pointer-events-none fixed z-[220] flex h-24 w-52 -translate-x-1/2 -translate-y-1/2 rotate-2 flex-col items-center justify-center rounded-2xl border shadow-[0_22px_55px_var(--color-drag-shadow)] ${darkMode
+                ? "border-white/20 bg-[var(--color-ink-strong)] text-white"
+                : "border-[var(--color-rule-soft-2)] bg-white text-[var(--color-ink-deep)]"
               }`}
             style={{
               left: dragPosition.x,
@@ -399,7 +399,7 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
             <strong className="text-2xl tracking-[0.16em]">
               {draggingAccount.shortTitle}
             </strong>
-            <span className="mt-2 text-[10px] font-semibold tracking-[0.16em] opacity-60">
+            <span className="mt-2 text-xs font-medium opacity-60">
               {draggingAccount.fullTitle}
             </span>
           </div>
@@ -407,8 +407,8 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
           <footer
             data-trash-zone
             className={`fixed inset-x-0 bottom-0 z-[210] flex h-24 items-end justify-center bg-gradient-to-t pb-3 pt-6 text-white transition-colors duration-200 ${trashActive
-                ? "from-red-800/40 via-red-600/35 to-transparent"
-                : "from-red-700/30 via-red-600/25 to-transparent"
+                ? "from-[var(--color-trash-active-from)] via-[var(--color-trash-active-via)] to-transparent"
+                : "from-[var(--color-trash-idle-from)] via-[var(--color-trash-idle-via)] to-transparent"
               }`}
           >
             <div
@@ -417,14 +417,14 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
             >
               <span
                 className={`grid h-14 w-14 place-items-center rounded-full border-2 transition-colors ${trashActive
-                    ? "border-white bg-white text-red-600"
-                    : "border-white/60 bg-red-600/20 text-white"
+                    ? "border-white bg-white text-[var(--color-danger)]"
+                    : "border-white/60 bg-[var(--color-trash-idle-via)] text-white"
                   }`}
               >
                 <Trash2 aria-hidden="true" size={27} />
               </span>
-              <span className="mt-2 text-xs font-bold tracking-[0.14em]">
-                {trashActive ? "RELEASE TO REMOVE" : "DRAG HERE TO REMOVE"}
+              <span className="mt-2 text-xs font-semibold">
+                {trashActive ? "Release to remove" : "Drag here to remove"}
               </span>
             </div>
           </footer>
@@ -439,7 +439,7 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
           aria-label={`Opening ${transitionAccount?.fullTitle ?? "account"}`}
         >
           <div
-            className={`absolute h-[12vmax] w-[12vmax] -translate-x-1/2 -translate-y-1/2 rounded-[52%_48%_44%_56%] transition-transform duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)] will-change-transform ${darkMode ? "bg-[#101c39]" : "bg-white"
+            className={`absolute h-[12vmax] w-[12vmax] -translate-x-1/2 -translate-y-1/2 rounded-[52%_48%_44%_56%] transition-transform duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)] will-change-transform ${darkMode ? "bg-[var(--color-night)]" : "bg-white"
               } ${dropExpanded ? "scale-[24]" : "scale-0"}`}
             style={{
               left: dropOrigin.x,
@@ -447,7 +447,7 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
             }}
           />
           <div
-            className={`absolute inset-0 z-10 flex flex-col items-center justify-center transition-all delay-500 duration-300 ${darkMode ? "text-white" : "text-black"
+            className={`absolute inset-0 z-10 flex flex-col items-center justify-center transition-[opacity,transform] delay-500 duration-300 ${darkMode ? "text-white" : "text-[var(--color-ink-deep)]"
               } ${dropExpanded
                 ? "translate-y-0 opacity-100"
                 : "translate-y-3 opacity-0"
@@ -457,10 +457,10 @@ export default function Dashboard({ initialDarkMode = false }: DashboardProps) {
               {transitionAccount?.shortTitle}
             </span>
             <span
-              className={`mt-3 text-xs font-semibold tracking-[0.3em] ${darkMode ? "text-white/70" : "text-black/60"
+              className={`mt-3 text-xs font-medium ${darkMode ? "text-white/70" : "text-[var(--color-muted)]"
                 }`}
             >
-              OPENING {transitionAccount?.fullTitle}
+              Opening {transitionAccount?.fullTitle}
             </span>
           </div>
         </div>

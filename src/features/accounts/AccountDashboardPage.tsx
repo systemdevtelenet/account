@@ -25,8 +25,8 @@ type AccountDashboardPageProps = {
 function KpiCard({ label, value }: { label: string; value: string }) {
   return (
     <article className="account-summary-item min-w-0 py-2 sm:py-3">
-      <p className="text-xs text-[#61718b]">{label}</p>
-      <p className="mt-2 truncate text-2xl font-semibold tabular-nums text-[#172343] sm:text-[28px]">
+      <p className="text-xs text-[var(--color-muted)]">{label}</p>
+      <p className="mt-2 truncate text-2xl font-semibold tabular-nums text-[var(--color-ink)] sm:text-[28px]">
         {value}
       </p>
     </article>
@@ -59,7 +59,7 @@ export default function AccountDashboardPage({
       data-sidebar-collapsed={sidebar.collapsed}
       data-sidebar-open={sidebar.mobileOpen}
       className={`account-page account-screen min-h-screen ${
-        darkMode ? "bg-[#101c39] text-[#edf4ff]" : "bg-[#f4f7fb] text-[#172343]"
+        darkMode ? "bg-[var(--color-night)] text-[var(--color-ink-dark)]" : "bg-[var(--color-status-well-soft)] text-[var(--color-ink)]"
       }`}
     >
       <AccountSidebar
@@ -74,8 +74,8 @@ export default function AccountDashboardPage({
           id="core-staffing"
           className={`account-hero relative px-4 pt-4 pb-8 text-white sm:px-7 lg:px-7 ${
             darkMode
-              ? "bg-[radial-gradient(circle_at_72%_-45%,#263a63_0_19%,transparent_40%),linear-gradient(119deg,#101c39_0%,#152442_51%,#1d3156_100%)]"
-              : "bg-[radial-gradient(circle_at_72%_-45%,#5F8DB5_0_19%,transparent_40%),linear-gradient(119deg,#2F6798_0%,#3D76A3_51%,#5F8DB5_100%)]"
+              ? "bg-[radial-gradient(circle_at_72%_-45%,var(--color-hero-radial-dark)_0_19%,transparent_40%),linear-gradient(119deg,var(--color-night)_0%,var(--color-hero-mid-dark)_51%,var(--color-hero-end-dark)_100%)]"
+              : "bg-[radial-gradient(circle_at_72%_-45%,var(--color-blue-muted)_0_19%,transparent_40%),linear-gradient(119deg,var(--color-accent)_0%,var(--color-hero-mid-light)_51%,var(--color-blue-muted)_100%)]"
           }`}
         >
           <div className="relative w-full">
@@ -108,26 +108,26 @@ export default function AccountDashboardPage({
             </div>
           </section>
 
-          {error && !data && <p role="alert" className="rounded-lg border border-red-300 bg-white px-4 py-3 text-sm text-red-700">Account workforce data could not be loaded. {error}</p>}
+          {error && !data && <p role="alert" className="rounded-lg border border-[var(--color-danger-border-soft)] bg-white px-4 py-3 text-sm text-[var(--color-danger-text)]">Account workforce data could not be loaded. {error}</p>}
 
           <div className="mt-4 grid items-start gap-3">
             <section
               id="separation-analysis"
-              className="account-panel rounded-xl border border-[#e9eef5] bg-white p-4 shadow-[0_4px_18px_rgba(54,88,125,0.06)] sm:p-5"
+              className="account-panel rounded-xl border border-[var(--color-status-well-card)] bg-white p-4 shadow-[0_4px_18px_var(--color-panel-shadow-soft)] sm:p-5"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <span className="grid h-8 w-8 place-items-center rounded-full bg-[#e8f0f6] text-[#2F6798]">
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-[var(--color-status-well)] text-[var(--color-accent)]">
                     <BarChart3 size={17} />
                   </span>
                   <div>
                     <h2 className="text-sm font-bold">Onboarding and offboarding</h2>
-                    <p className="text-[10px] text-[#7b89a0]">
+                    <p className="text-[10px] text-[var(--color-muted-soft)]">
                       Counts from employee start dates and recorded offboarding history.
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-[10px] text-[#7b89a0]">
+                <div className="flex items-center gap-4 text-[10px] text-[var(--color-muted-soft)]">
                   {(["Week", "Month", "Quarter", "Year"] as const).map((period) => (
                     <button
                       key={period}
@@ -139,11 +139,11 @@ export default function AccountDashboardPage({
                       className={`border-b-2 pb-2 transition-colors ${
                         grouping === period
                           ? darkMode
-                            ? "border-[#d7e4f8] font-bold text-white"
-                            : "border-[#667085] font-bold text-[#25324d]"
+                            ? "border-[var(--color-rule-active)] font-bold text-white"
+                            : "border-[var(--color-muted-dim-5)] font-bold text-[var(--color-rule-soft-dark)]"
                           : darkMode
                             ? "border-transparent hover:text-white"
-                            : "border-transparent hover:text-[#25324d]"
+                            : "border-transparent hover:text-[var(--color-rule-soft-dark)]"
                       }`}
                     >
                       {period}
@@ -151,24 +151,24 @@ export default function AccountDashboardPage({
                   ))}
                 </div>
               </div>
-              {data ? <AccountOverviewChart darkMode={darkMode} grouping={grouping} data={data.chart} /> : <div className="grid h-[320px] place-items-center text-sm text-slate-500">{loading ? "Loading workforce movement…" : "No workforce data available."}</div>}
-              {data && !data.offboardingHistoryAvailable && <p role="status" className="mt-2 text-xs text-amber-700">Offboarding history is not available in the connected database; onboarding counts are still shown.</p>}
+              {data ? <AccountOverviewChart darkMode={darkMode} grouping={grouping} data={data.chart} /> : <div className="grid h-[320px] place-items-center text-sm text-[var(--color-muted)]">{loading ? "Loading workforce movement…" : "No workforce data available."}</div>}
+              {data && !data.offboardingHistoryAvailable && <p role="status" className="mt-2 text-xs text-[var(--color-warning-ink)]">Offboarding history is not available in the connected database; onboarding counts are still shown.</p>}
             </section>
 
             <section
               id="onboarding-offboarding"
-              className="account-panel rounded-xl border border-[#e9eef5] bg-white p-4 shadow-[0_4px_18px_rgba(54,88,125,0.06)] sm:p-5"
+              className="account-panel rounded-xl border border-[var(--color-status-well-card)] bg-white p-4 shadow-[0_4px_18px_var(--color-panel-shadow-soft)] sm:p-5"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <span className="grid h-8 w-8 place-items-center rounded-full bg-[#e8f0f6] text-[#2F6798]">
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-[var(--color-status-well)] text-[var(--color-accent)]">
                     <UsersRound size={17} />
                   </span>
                   <div>
                     <h2 className="text-sm font-bold">
                       Current roster
                     </h2>
-                    <p className="text-[10px] text-[#7b89a0]">
+                    <p className="text-[10px] text-[var(--color-muted-soft)]">
                       Search the current assigned employees for this account.
                     </p>
                   </div>
@@ -176,12 +176,12 @@ export default function AccountDashboardPage({
                 <button
                   type="button"
                   onClick={() => router.push(rosterPath)}
-                  className="flex items-center gap-1 text-[10px] font-bold text-[#2F6798]"
+                  className="flex items-center gap-1 text-[10px] font-bold text-[var(--color-accent)]"
                 >
                   View All <ArrowRight size={14} />
                 </button>
               </div>
-              <label className="mt-4 flex h-8 items-center gap-2 rounded-lg border border-[#e7edf4] px-2 text-[10px] text-[#9aa6b8]">
+              <label className="mt-4 flex h-8 items-center gap-2 rounded-lg border border-[var(--color-rule-soft-3)] px-2 text-[10px] text-[var(--color-muted-dim-7)]">
                 <Search size={14} />
                 <input
                   aria-label="Search employee name or ID"
@@ -191,8 +191,8 @@ export default function AccountDashboardPage({
                   className="w-full bg-transparent outline-none"
                 />
               </label>
-              <div className="account-table mt-2 overflow-hidden rounded-lg border border-[#e7edf4]">
-                <div className="grid grid-cols-[.8fr_1.7fr_1fr_.8fr] bg-[#f8fafc] px-2 py-2 text-[8px] font-bold text-[#687993] sm:px-3">
+              <div className="account-table mt-2 overflow-hidden rounded-lg border border-[var(--color-rule-soft-3)]">
+                <div className="grid grid-cols-[.8fr_1.7fr_1fr_.8fr] bg-[var(--color-table-head-cool)] px-2 py-2 text-[8px] font-bold text-[var(--color-muted-2)] sm:px-3">
                   <span>ID</span>
                   <span>NAME</span>
                   <span>ROLE</span>
@@ -201,16 +201,16 @@ export default function AccountDashboardPage({
                 {filteredEmployees.map((employee) => (
                   <div
                     key={employee.id}
-                    className="grid grid-cols-[.8fr_1.7fr_1fr_.8fr] items-center border-t border-[#edf1f5] px-2 py-1.5 text-[9px] text-[#4d5c75] sm:px-3"
+                    className="grid grid-cols-[.8fr_1.7fr_1fr_.8fr] items-center border-t border-[var(--color-rule-row)] px-2 py-1.5 text-[9px] text-[var(--color-muted-dim-2)] sm:px-3"
                   >
                     <span>{employee.employeeCode}</span>
                     <span className="truncate">{employee.employeeName}</span>
-                    <span className="truncate text-[#8c98aa]">{employee.position}</span>
+                    <span className="truncate text-[var(--color-muted-dim-6)]">{employee.position}</span>
                     <span>{employee.status}</span>
                   </div>
                 ))}
                 {!loading && filteredEmployees.length === 0 && (
-                  <p className="border-t border-[#edf1f5] px-3 py-6 text-center text-xs text-slate-500">
+                  <p className="border-t border-[var(--color-rule-row)] px-3 py-6 text-center text-xs text-[var(--color-muted)]">
                     {data?.employees.length ? "No employees match this search." : "No current assignments for this account."}
                   </p>
                 )}

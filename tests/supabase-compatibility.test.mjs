@@ -45,7 +45,7 @@ beforeEach(() => {
     const table = url.pathname.split("/").at(-1);
     requests.push(url);
     const tables = {
-      employees: [{ id: employeeId, employee_email: "admin@example.test", company_email: null, personal_email: null, role_id: 1 }],
+      employees: [{ id: employeeId, employee_email: "admin@example.test", employee_name: "Admin User", company_email: null, personal_email: null, role_id: 1 }],
       roles: [{ role_id: 1, role_name: "Admin" }],
       notifications: [
         { notification_id: 1, recipient_employee_id: employeeId, title: "Your notification", description: "Assigned to this employee", read_at: null, created_at: "2026-11-19T00:00:00Z", action_url: null },
@@ -76,15 +76,37 @@ after(() => {
 });
 
 test("authorized employees can load only their notifications without an auth-link table", async () => {
-  const access = await accessModule.resolveUserAccess(userId, "admin@example.test", true);
+  const access = await accessModule.resolveUserAccess(
+    userId,
+    "admin@example.test",
+    true,
+    "https://example.test/avatar.png",
+  );
   assert.equal(access.status, "allowed");
   assert.equal(access.actor.employeeId, employeeId);
+  assert.equal(access.actor.employeeName, "Admin User");
+  assert.equal(access.actor.email, "admin@example.test");
+  assert.equal(access.actor.avatarUrl, "https://example.test/avatar.png");
   const result = await notificationModule.getEmployeeNotifications(access.actor.employeeId);
   assert.equal(result.unreadCount, 1);
   assert.deepEqual(result.notifications.map((notification) => notification.notification_id), [1]);
   assert.ok(requests.filter((url) => url.pathname.endsWith("/notifications"))
     .every((url) => url.searchParams.get("recipient_employee_id") === `eq.${employeeId}`));
   assert.ok(requests.every((url) => !url.pathname.endsWith("/employee_auth_links")));
+});
+
+test("avatar metadata accepts only safe http(s) URLs", () => {
+  assert.equal(
+    accessModule.readAvatarUrl({ avatar_url: "https://example.test/avatar.png" }),
+    "https://example.test/avatar.png",
+  );
+  assert.equal(
+    accessModule.readAvatarUrl({ picture: "http://example.test/picture.jpg" }),
+    "http://example.test/picture.jpg",
+  );
+  assert.equal(accessModule.readAvatarUrl({ avatar_url: "javascript:alert(1)" }), null);
+  assert.equal(accessModule.readAvatarUrl({ avatar_url: "not a url" }), null);
+  assert.equal(accessModule.readAvatarUrl({}), null);
 });
 
 test("unconfirmed and unmatched identities remain denied", async () => {

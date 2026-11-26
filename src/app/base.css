@@ -1,8 +1,8 @@
-/* Hallmark · shape: app screen · genre: modern-minimal · theme: brand · redesign: full
+/* Hallmark · check: built: Hallmark · theme: brand · redesign: polish · shape: app screen · genre: modern-minimal
  * paper: soft white · accent: CTNP blue · display: Geist · body: Geist
  * nav: kept · signature: workforce and roster views · states: light and dark
- * axes: soft white/Geist/CTNP blue · posture: left-biased · contrast: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: H, let the data lead each screen */
+ * axes: soft white/Geist/CTNP blue · posture: left-biased · contrast: pass · v2.0.0
+ * review: finish-review: in-thread · recapture: render tier unavailable · static source pass */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
 html { scrollbar-color: var(--color-muted) var(--color-paper); scroll-padding-top: var(--space-3xl); }

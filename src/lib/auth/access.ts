@@ -8,6 +8,9 @@ import { createSupabaseServerClient } from "../supabase/server";
 type AccessActor = {
   userId: string;
   employeeId: number;
+  employeeName: string | null;
+  email: string | null;
+  avatarUrl: string | null;
   role: "admin" | "team-lead";
   accountCode: string | null;
   destination: string;
@@ -34,11 +37,13 @@ export function isTeamLeadForAccount(actor: AccessActor, accountCode: string) {
   );
 }
 
-async function resolveEmployeeId(
+type EmployeeIdentity = { id: number; name: string | null };
+
+async function resolveEmployeeIdentity(
   admin: ReturnType<typeof createSupabaseAdminClient>,
   userEmail: string | undefined,
   emailConfirmed: boolean,
-) {
+): Promise<EmployeeIdentity | null> {
   // Auth identifies the signed-in user; the verified email maps that identity to an employee.
   if (!emailConfirmed || !userEmail) return null;
 
@@ -46,32 +51,61 @@ async function resolveEmployeeId(
   const emailColumns = ["employee_email", "company_email", "personal_email"];
   const matches = await Promise.all(emailColumns.map((column) => admin
     .from("employees")
-    .select("id")
+    .select("id,employee_name")
     .eq(column, normalizedEmail)
     .limit(2)));
   if (matches.some(({ error }) => error)) return null;
 
-  const employeeIds = new Set(matches.flatMap(({ data }) => (data ?? []).map(({ id }) => id)));
-  return employeeIds.size === 1 ? [...employeeIds][0] : null;
+  const employees = matches.flatMap(({ data }) => data ?? []);
+  const employeeIds = new Set(employees.map(({ id }) => id));
+  if (employeeIds.size !== 1) return null;
+
+  const employee = employees.find(({ id }) => id === [...employeeIds][0]);
+  if (!employee) return null;
+
+  return {
+    id: employee.id,
+    name: typeof employee.employee_name === "string" && employee.employee_name.trim()
+      ? employee.employee_name.trim()
+      : null,
+  };
 }
 
 function accountDestination(accountCode: string) {
   return `/dashboard/accounts/${encodeURIComponent(accountCode)}/roster-list`;
 }
 
+export function readAvatarUrl(metadata: Record<string, unknown> | undefined) {
+  for (const key of ["avatar_url", "picture", "avatar", "photo"]) {
+    const value = metadata?.[key];
+    if (typeof value !== "string" || value.length > 2048) continue;
+
+    try {
+      const url = new URL(value);
+      if (url.protocol === "http:" || url.protocol === "https:") return value;
+    } catch {
+      // Ignore malformed metadata instead of passing it to the browser.
+    }
+  }
+
+  return null;
+}
+
 export async function resolveUserAccess(
   userId: string,
   userEmail?: string,
   emailConfirmed = false,
+  avatarUrl: string | null = null,
 ): Promise<AccessResult> {
   const admin = createSupabaseAdminClient();
-  const employeeId = await resolveEmployeeId(admin, userEmail, emailConfirmed);
-  if (!employeeId) return { status: "denied" };
+  const employee = await resolveEmployeeIdentity(admin, userEmail, emailConfirmed);
+  if (!employee) return { status: "denied" };
 
+  const email = userEmail?.trim().toLowerCase() ?? null;
   const { data: employees, error: employeeError } = await admin
     .from("employees")
     .select("role_id")
-    .eq("id", employeeId)
+    .eq("id", employee.id)
     .limit(1);
   const roleId = employees?.[0]?.role_id;
   if (employeeError || !roleId) return { status: "denied" };
@@ -89,7 +123,16 @@ export async function resolveUserAccess(
   if (role.endsWith("ADMIN")) {
     return {
       status: "allowed",
-      actor: { userId, employeeId, role: "admin", accountCode: null, destination: "/dashboard" },
+      actor: {
+        userId,
+        employeeId: employee.id,
+        employeeName: employee.name,
+        email,
+        avatarUrl,
+        role: "admin",
+        accountCode: null,
+        destination: "/dashboard",
+      },
     };
   }
 
@@ -99,7 +142,7 @@ export async function resolveUserAccess(
   const { data: assignments, error: assignmentError } = await admin
     .from("employee_assignments")
     .select("account_id,effective_from")
-    .eq("employee_id", employeeId)
+    .eq("employee_id", employee.id)
     .is("effective_to", null)
     .order("effective_from", { ascending: false, nullsFirst: false })
     .limit(1);
@@ -119,7 +162,10 @@ export async function resolveUserAccess(
     status: "allowed",
     actor: {
       userId,
-      employeeId,
+      employeeId: employee.id,
+      employeeName: employee.name,
+      email,
+      avatarUrl,
       role: "team-lead",
       accountCode,
       destination: accountDestination(accountCode),
@@ -137,6 +183,7 @@ export const getCurrentAccess = cache(async (): Promise<AccessResult> => {
       data.user.id,
       data.user.email,
       Boolean(data.user.email_confirmed_at),
+      readAvatarUrl(data.user.user_metadata),
     );
   } catch {
     return { status: "denied" };

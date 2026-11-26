@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
+import { InlineScript } from "@/components/InlineScript";
 import "./globals.css";
 
 // Register the app's fonts as CSS variables so components can use them consistently.
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       data-theme={darkMode ? "dark" : "light"}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       style={{ colorScheme: darkMode ? "dark" : "light" }}
@@ -39,6 +41,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body
         className="m-0 flex min-h-full flex-col [&_button]:cursor-pointer"
       >
+        {/* Mark scripting availability before paint; <html> suppresses that intentional DOM change during hydration. */}
+        <InlineScript html="document.documentElement.dataset.js='true';" />
         {children}
       </body>
     </html>

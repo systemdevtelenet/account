@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { resolveUserAccess } from "../../../lib/auth/access";
+import { readAvatarUrl, resolveUserAccess } from "../../../lib/auth/access";
 
 export async function GET(request: NextRequest) {
   // Read the OAuth callback parameters and validate required environment data.
@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
       data.user.id,
       data.user.email,
       Boolean(data.user.email_confirmed_at),
+      readAvatarUrl(data.user.user_metadata),
     );
   } catch {
     // Any access lookup failure is treated as an unauthorized login attempt.

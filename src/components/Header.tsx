@@ -16,6 +16,7 @@ import {
   subscribeToAccountSearch,
 } from "../lib/account-search";
 import NotificationPanel from "./NotificationPanel";
+import UserAvatar from "./UserAvatar";
 
 type HeaderProps = {
   initialDarkMode?: boolean;
@@ -24,7 +25,7 @@ type HeaderProps = {
 // Render the portal header and manage its search, theme, notification, and profile controls.
 export default function Header({ initialDarkMode = false }: HeaderProps) {
   // Get the current user's role details for the profile control.
-  const { roleLabel, initials } = useCurrentRole();
+  const { roleLabel, displayName, email, avatarUrl, initials } = useCurrentRole();
   // Use the router to navigate after a successful sign-out request.
   const router = useRouter();
   // Avoid re-navigating when a search is submitted from the dashboard itself.
@@ -80,7 +81,7 @@ export default function Header({ initialDarkMode = false }: HeaderProps) {
   return (
     <header className="portal-header fixed inset-x-0 top-0 z-[300] flex h-[72px] items-center justify-between px-4 sm:h-[84px] sm:px-6 xl:px-8">
       <div className="flex items-center gap-3 sm:gap-4">
-        <div className="grid h-[45px] w-[45px] shrink-0 place-items-center overflow-hidden rounded-full bg-white text-[#1468d9] shadow-[0_4px_12px_#0759b644] sm:h-[57px] sm:w-[57px]">
+        <div className="grid h-[45px] w-[45px] shrink-0 place-items-center overflow-hidden rounded-full bg-white text-[var(--color-brand-bright)] shadow-[0_4px_12px_var(--color-brand-tint)] sm:h-[57px] sm:w-[57px]">
           <Image
             src="/ctnp-logo.png"
             alt="CTNP logo"
@@ -96,9 +97,9 @@ export default function Header({ initialDarkMode = false }: HeaderProps) {
 
       <div className="relative flex items-center gap-1.5 sm:gap-2.5">
         <div
-          className={`flex h-9 items-center overflow-hidden rounded-full border border-white/30 bg-[#055bbe33] text-[#d9edff] transition-[background-color,border-color] duration-200 focus-within:border-white/70 focus-within:bg-[#055bbe61] sm:h-10 ${
+          className={`flex h-9 items-center overflow-hidden rounded-full border border-white/30 bg-[var(--color-brand-field)] text-[var(--color-ink-on-brand)] transition-[background-color,border-color] duration-200 focus-within:border-white/70 focus-within:bg-[var(--color-brand-control-hover)] sm:h-10 ${
             searchOpen
-              ? "absolute right-0 z-[60] w-[min(210px,calc(100vw-28px))] bg-[#0b69c9] sm:static sm:w-[210px] sm:bg-[#055bbe61]"
+              ? "absolute right-0 z-[60] w-[min(210px,calc(100vw-28px))] bg-[var(--color-brand-strong)] sm:static sm:w-[210px] sm:bg-[var(--color-brand-control-hover)]"
               : "w-9 sm:w-10"
           }`}
         >
@@ -113,7 +114,7 @@ export default function Header({ initialDarkMode = false }: HeaderProps) {
           </button>
           <input
             ref={searchInputRef}
-            className={`w-[150px] min-w-[150px] translate-x-2 bg-transparent text-xs text-white outline-none transition-[opacity,transform] duration-200 placeholder:text-[#d4eaff] ${
+            className={`w-[150px] min-w-[150px] translate-x-2 bg-transparent text-xs text-white outline-none transition-[opacity,transform] duration-200 placeholder:text-[var(--color-placeholder-on-brand)] ${
               searchOpen ? "translate-x-0 opacity-100" : "opacity-0"
             }`}
             aria-label="Search accounts"
@@ -139,7 +140,7 @@ export default function Header({ initialDarkMode = false }: HeaderProps) {
         <button
           type="button"
           aria-pressed={darkMode}
-          className="hidden h-10 w-10 place-items-center rounded-full bg-[#055bbe1f] transition-colors hover:bg-white/15 sm:grid"
+          className="hidden h-10 w-10 place-items-center rounded-full bg-[var(--color-brand-control)] transition-colors hover:bg-white/15 sm:grid"
           aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
           onClick={toggleTheme}
         >
@@ -153,7 +154,7 @@ export default function Header({ initialDarkMode = false }: HeaderProps) {
         <div className="relative">
           <button
             type="button"
-            className="relative grid h-11 w-11 place-items-center rounded-full bg-[#055bbe1f] transition-colors hover:bg-white/15"
+            className="relative grid h-11 w-11 place-items-center rounded-full bg-[var(--color-brand-control)] transition-colors hover:bg-white/15"
             aria-label="Notifications"
             aria-expanded={notificationsOpen}
             aria-controls="portal-notifications"
@@ -169,44 +170,43 @@ export default function Header({ initialDarkMode = false }: HeaderProps) {
 
         <button
           type="button"
+          aria-label={`Account menu for ${displayName}`}
           aria-expanded={profileOpen}
           className={`flex h-[39px] items-center gap-2 rounded-[28px] border py-1 pr-2 pl-1 font-bold transition-colors sm:h-[45px] sm:gap-[11px] sm:pr-[13px] ${
             darkMode
-              ? "border-white/15 bg-[#172746] text-white"
-              : "border-transparent bg-[#f5f8ff] text-[#101a39]"
+              ? "border-white/15 bg-[var(--color-panel-dark)] text-white"
+              : "border-transparent bg-[var(--color-control-paper)] text-[var(--color-night-soft)]"
           }`}
           onClick={() => setProfileOpen(!profileOpen)}
         >
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-[#101a32] text-sm text-white sm:h-[37px] sm:w-[37px]">
-            {initials}
-          </span>
-          <span className="hidden sm:inline">{roleLabel}</span>
+          <UserAvatar avatarUrl={avatarUrl} initials={initials} />
+          <span className="hidden max-w-32 truncate sm:inline">{displayName}</span>
           <ChevronDown aria-hidden="true" className="ml-1 sm:ml-2" size={12} />
         </button>
 
         {profileOpen && (
           <div
-            className={`account-menu absolute top-[53px] right-0 z-50 min-w-40 rounded-[10px] px-[18px] py-3.5 text-[13px] leading-8 shadow-[0_8px_25px_#0927612c] ${darkMode ? "bg-[#172746] text-[#edf4ff]" : "bg-white text-[#17213b]"}`}
+            className={`account-menu absolute top-[53px] right-0 z-50 min-w-40 rounded-[10px] px-[18px] py-3.5 text-[13px] leading-8 shadow-[0_8px_25px_var(--color-shadow-menu)] ${darkMode ? "bg-[var(--color-panel-dark)] text-[var(--color-ink-dark)]" : "bg-white text-[var(--color-ink-menu)]"}`}
           >
-            <strong className="block leading-5">{roleLabel}</strong>
+            <strong className="block leading-5">{displayName}</strong>
             <small
-              className={`mt-[3px] block text-[11px] leading-4 ${darkMode ? "text-[#aabbd5]" : "text-[#7182a0]"}`}
+              className={`mt-[3px] block text-[11px] leading-4 ${darkMode ? "text-[var(--color-muted-dark)]" : "text-[var(--color-muted-3)]"}`}
             >
-              {roleLabel}
+              {email ? `${email} · ${roleLabel}` : roleLabel}
             </small>
             <hr
-              className={`my-2.5 border-0 border-t ${darkMode ? "border-[#2b3e61]" : "border-[#edf1f7]"}`}
+              className={`my-2.5 border-0 border-t ${darkMode ? "border-[var(--color-rule-menu)]" : "border-[var(--color-rule-row-2)]"}`}
             />
             <button
               type="button"
-              className={`block bg-transparent py-1 text-[13px] ${darkMode ? "text-[#edf4ff]" : "text-[#17213b]"}`}
+              className={`block bg-transparent py-1 text-[13px] ${darkMode ? "text-[var(--color-ink-dark)]" : "text-[var(--color-ink-menu)]"}`}
             >
               Account settings
             </button>
             <button
               type="button"
               onClick={handleSignOut}
-              className={`block bg-transparent py-1 text-[13px] ${darkMode ? "text-[#edf4ff]" : "text-[#17213b]"}`}
+              className={`block bg-transparent py-1 text-[13px] ${darkMode ? "text-[var(--color-ink-dark)]" : "text-[var(--color-ink-menu)]"}`}
             >
               Sign out
             </button>

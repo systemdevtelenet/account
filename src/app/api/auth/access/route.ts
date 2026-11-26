@@ -14,6 +14,9 @@ export async function GET() {
     destination: access.actor.destination,
     role: access.actor.role,
     accountCode: access.actor.accountCode,
+    name: access.actor.employeeName,
+    email: access.actor.email,
+    avatarUrl: access.actor.avatarUrl,
   }, {
     // Access details are user-specific and should not be cached.
     headers: { "Cache-Control": "no-store" },

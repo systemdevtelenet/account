@@ -83,7 +83,7 @@ export default function RosterListPage() {
   const [targetPositionId, setTargetPositionId] = useState("");
   const [actionError, setActionError] = useState("");
   const [savingAction, setSavingAction] = useState(false);
-  const panelClass = darkMode ? "border-[#2a3b5c] bg-[#172746] text-[#edf4ff]" : "border-[#e7edf5] bg-white text-[#182746]";
+  const panelClass = darkMode ? "border-[var(--color-rule-dark)] bg-[var(--color-panel-dark)] text-[var(--color-ink-dark)]" : "border-[var(--color-rule-card)] bg-white text-[var(--color-ink-strong)]";
 
   const employeeRows = rosterData?.employees ?? EMPTY_EMPLOYEES;
   // Use the same status groups for summary counts and the status tabs.
@@ -222,7 +222,7 @@ export default function RosterListPage() {
   };
 
   return (
-    <main data-account-theme={darkMode ? "dark" : "light"} data-sidebar-collapsed={sidebar.collapsed} data-sidebar-open={sidebar.mobileOpen} className={`account-screen min-h-screen ${darkMode ? "bg-[#101c39]" : "bg-[#f5f8fc]"}`}>
+    <main data-account-theme={darkMode ? "dark" : "light"} data-sidebar-collapsed={sidebar.collapsed} data-sidebar-open={sidebar.mobileOpen} className={`account-screen min-h-screen ${darkMode ? "bg-[var(--color-night)]" : "bg-[var(--color-paper)]"}`}>
       <AccountSidebar darkMode={darkMode} collapsed={sidebar.collapsed} mobileOpen={sidebar.mobileOpen} onClose={sidebar.closeMobile} />
       <div className="lg:pl-[220px]">
         <section className="account-hero relative px-4 pt-4 pb-8 text-white sm:px-7">
@@ -241,29 +241,29 @@ export default function RosterListPage() {
             <RosterMetric label="Other statuses" value={displayCount(workforceCounts.other)} color="#fa3e65" />
           </div>
 
-          {rosterLoading && !rosterData && <p role="status" className="text-sm text-[#687993]">Loading roster from the database…</p>}
-          {rosterError && <p role="alert" className="rounded-lg border border-[#f4c7cf] bg-[#fff5f6] px-4 py-3 text-sm text-[#b4233d]">{rosterError}</p>}
+          {rosterLoading && !rosterData && <p role="status" className="text-sm text-[var(--color-muted-2)]">Loading roster from the database…</p>}
+          {rosterError && <p role="alert" className="rounded-lg border border-[var(--color-danger-border)] bg-[var(--color-danger-wash)] px-4 py-3 text-sm text-[var(--color-danger)]">{rosterError}</p>}
           <section className={`rounded-xl border p-3 shadow-sm sm:p-4 ${panelClass}`}>
             <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
               <div className="flex flex-wrap gap-1 text-sm font-medium" aria-label="Filter employees by status">
                 {["All Employees", "Active", "On Leave", "Other Statuses"].map((tab) => (
-                  <button key={tab} type="button" aria-pressed={activeTab === tab} onClick={() => { setActiveTab(tab); setCurrentPage(1); }} className={`min-h-11 rounded-lg px-3 ${activeTab === tab ? "bg-[#e8f0f6] text-[#2F6798]" : "border-transparent opacity-75 hover:bg-slate-50"}`}>
+                  <button key={tab} type="button" aria-pressed={activeTab === tab} onClick={() => { setActiveTab(tab); setCurrentPage(1); }} className={`min-h-11 rounded-lg px-3 ${activeTab === tab ? "bg-[var(--color-status-well)] text-[var(--color-accent)]" : "border-transparent opacity-75 hover:bg-slate-50"}`}>
                     {tab}
                   </button>
                 ))}
               </div>
               <div className="flex gap-2">
-                <button type="button" onClick={handleExport} className="flex items-center gap-1 rounded-lg border border-[#dce6f1] px-3 py-2 text-[10px] font-semibold text-[#2F6798]"><Download size={13} /> Export</button>
+                <button type="button" onClick={handleExport} className="flex items-center gap-1 rounded-lg border border-[var(--color-rule-soft)] px-3 py-2 text-[10px] font-semibold text-[var(--color-accent)]"><Download size={13} /> Export</button>
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
-              <label className="flex min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-[#dce6f1] px-3 py-2 text-sm text-[#687993]"><Search size={16} /><input aria-label="Search employee name, ID, or email" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search employees" className="w-full bg-transparent outline-none" /></label>
-              <select value={positionFilter} onChange={(event) => setPositionFilter(event.target.value)} className="rounded-lg border border-[#dce6f1] px-3 py-2 text-[10px]" aria-label="Filter by position"><option>All Positions</option>{positions.map((position) => <option key={position}>{position}</option>)}</select>
-              <button type="button" onClick={() => { setQuery(""); setActiveTab("All Employees"); setPositionFilter("All Positions"); setCurrentPage(1); }} className="flex items-center gap-1 rounded-lg border border-[#dce6f1] px-3 py-2 text-[10px] text-[#687993]"><RotateCcw size={13} /> Reset</button>
+              <label className="flex min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-[var(--color-rule-soft)] px-3 py-2 text-sm text-[var(--color-muted-2)]"><Search size={16} /><input aria-label="Search employee name, ID, or email" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search employees" className="w-full bg-transparent outline-none" /></label>
+              <select value={positionFilter} onChange={(event) => setPositionFilter(event.target.value)} className="rounded-lg border border-[var(--color-rule-soft)] px-3 py-2 text-[10px]" aria-label="Filter by position"><option>All Positions</option>{positions.map((position) => <option key={position}>{position}</option>)}</select>
+              <button type="button" onClick={() => { setQuery(""); setActiveTab("All Employees"); setPositionFilter("All Positions"); setCurrentPage(1); }} className="flex items-center gap-1 rounded-lg border border-[var(--color-rule-soft)] px-3 py-2 text-[10px] text-[var(--color-muted-2)]"><RotateCcw size={13} /> Reset</button>
             </div>
             <div className="mt-3 overflow-x-auto">
               <div className="min-w-[1240px] text-[10px]">
-                <div className={`grid ${rosterData?.canManage ? "grid-cols-[110px_1.5fr_1fr_0.8fr_0.8fr_0.7fr_160px]" : "grid-cols-[130px_1.5fr_1fr_1fr_1fr_0.85fr]"} gap-3 rounded-md px-3 py-3 font-bold ${darkMode ? "bg-[#0b1428] text-[#8292ad]" : "bg-[#f3f7fc] text-[#687993]"}`}>
+                <div className={`grid ${rosterData?.canManage ? "grid-cols-[110px_1.5fr_1fr_0.8fr_0.8fr_0.7fr_160px]" : "grid-cols-[130px_1.5fr_1fr_1fr_1fr_0.85fr]"} gap-3 rounded-md px-3 py-3 font-bold ${darkMode ? "bg-[var(--color-table-head-dark)] text-[var(--color-muted-table)]" : "bg-[var(--color-table-head-light)] text-[var(--color-muted-2)]"}`}>
                   <span>Employee ID</span>
                   <span>Employee Name</span>
                   <span>Position</span>
@@ -275,14 +275,14 @@ export default function RosterListPage() {
                 {visibleEmployees.map((employee) => (
                   <div
                     key={employee.employeeCode}
-                    className={`grid ${rosterData?.canManage ? "grid-cols-[110px_1.5fr_1fr_0.8fr_0.8fr_0.7fr_160px]" : "grid-cols-[130px_1.5fr_1fr_1fr_1fr_0.85fr]"} items-center gap-3 border-b px-3 py-3 text-sm ${darkMode ? "border-[#273653]" : "border-[#edf1f7]"}`}
+                    className={`grid ${rosterData?.canManage ? "grid-cols-[110px_1.5fr_1fr_0.8fr_0.8fr_0.7fr_160px]" : "grid-cols-[130px_1.5fr_1fr_1fr_1fr_0.85fr]"} items-center gap-3 border-b px-3 py-3 text-sm ${darkMode ? "border-[var(--color-rule-table)]" : "border-[var(--color-rule-row-2)]"}`}
                   >
-                    <span className="font-bold text-[#2F6798]">{employee.employeeCode}</span>
+                    <span className="font-bold text-[var(--color-accent)]">{employee.employeeCode}</span>
                     <span className="truncate">{employee.employeeName}</span>
                     <span>{employee.position}</span>
                     <span>{employee.hireDate}</span>
                     <span>{employee.site}</span>
-                    <span className={`font-bold ${employee.status === "Active" || employee.status === "Lateral" ? "text-[#10b981]" : employee.status === "On Leave" ? "text-[#b7791f]" : "text-[#d71945]"}`}>
+                    <span className={`font-bold ${employee.status === "Active" || employee.status === "Lateral" ? "text-[var(--color-positive-bright)]" : employee.status === "On Leave" ? "text-[var(--color-warning)]" : "text-[var(--color-danger-bright)]"}`}>
                       {employee.status}
                     </span>
                     {rosterData?.canManage && (
@@ -295,13 +295,13 @@ export default function RosterListPage() {
                 ))}
                 {filteredEmployees.length === 0 && (
                   <div className="py-8 text-center">
-                    <p className="text-sm text-[#687993]">No employees match these filters.</p>
-                    <button type="button" onClick={() => { setQuery(""); setActiveTab("All Employees"); setPositionFilter("All Positions"); setCurrentPage(1); }} className="mt-2 min-h-11 px-3 text-sm font-semibold text-[#2F6798]">Reset filters</button>
+                    <p className="text-sm text-[var(--color-muted-2)]">No employees match these filters.</p>
+                    <button type="button" onClick={() => { setQuery(""); setActiveTab("All Employees"); setPositionFilter("All Positions"); setCurrentPage(1); }} className="mt-2 min-h-11 px-3 text-sm font-semibold text-[var(--color-accent)]">Reset filters</button>
                   </div>
                 )}
               </div>
             </div>
-            <div className={`mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs ${darkMode ? "border-[#2a3b5c] text-[#aabbd5]" : "border-[#d8e1eb] text-[#61718b]"}`}>
+            <div className={`mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs ${darkMode ? "border-[var(--color-rule-dark)] text-[var(--color-muted-dark)]" : "border-[var(--color-rule)] text-[var(--color-muted)]"}`}>
               <div className="flex flex-wrap items-center gap-2">
                 <span>Show</span>
                 <select
@@ -311,7 +311,7 @@ export default function RosterListPage() {
                     setCurrentPage(1);
                   }}
                   aria-label="Employees per page"
-                  className={`min-h-9 rounded border px-2 py-1 ${darkMode ? "border-[#2a3b5c] bg-[#172746] text-[#edf4ff]" : "border-[#dce6f1] bg-white text-[#172343]"}`}
+                  className={`min-h-9 rounded border px-2 py-1 ${darkMode ? "border-[var(--color-rule-dark)] bg-[var(--color-panel-dark)] text-[var(--color-ink-dark)]" : "border-[var(--color-rule-soft)] bg-white text-[var(--color-ink)]"}`}
                 >
                   {PAGE_SIZE_OPTIONS.map((option) => (
                     <option key={option} value={option}>{option}</option>
@@ -319,7 +319,7 @@ export default function RosterListPage() {
                   <option value="all">All</option>
                 </select>
                 <span>per page</span>
-                <span className="ml-2 tabular-nums">Showing {firstVisible}–{lastVisible} of {filteredEmployees.length}{filteredEmployees.length !== employeeRows.length ? ` filtered from ${employeeRows.length}` : ""}</span>
+                <span className="ml-2 tabular-nums">Showing {firstVisible} to {lastVisible} of {filteredEmployees.length}{filteredEmployees.length !== employeeRows.length ? ` filtered from ${employeeRows.length}` : ""}</span>
               </div>
               <nav aria-label="Roster pages" className="flex items-center gap-1.5">
                 <button type="button" aria-label="Previous page" disabled={activePage === 1} onClick={() => setCurrentPage(activePage - 1)} className="grid min-h-9 min-w-9 place-items-center rounded-md border border-[var(--color-rule)] hover:bg-[var(--color-paper-2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)] disabled:cursor-not-allowed disabled:opacity-40"><ChevronLeft size={16} aria-hidden="true" /></button>
@@ -375,22 +375,22 @@ export default function RosterListPage() {
         </div>
       )}
       {exportPreviewOpen && (
-        <div className="fixed inset-0 z-50 bg-[#071329aa] p-4 sm:p-8">
+        <div className="fixed inset-0 z-50 bg-[var(--color-scrim-soft)] p-4 sm:p-8">
           <section className={`mx-auto flex max-h-full w-full max-w-5xl flex-col rounded-xl border p-5 shadow-2xl ${panelClass}`}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-lg font-bold">Export Preview</h2>
-                <p className="mt-1 text-xs text-[#687993]">
+                <p className="mt-1 text-xs text-[var(--color-muted-2)]">
                   Review the filtered employee data before downloading.
                 </p>
               </div>
-              <button type="button" onClick={() => setExportPreviewOpen(false)} className="text-lg text-[#687993]" aria-label="Close export preview">
+              <button type="button" onClick={() => setExportPreviewOpen(false)} className="text-lg text-[var(--color-muted-2)]" aria-label="Close export preview">
                 ×
               </button>
             </div>
-            <div className="mt-4 overflow-auto rounded-lg border border-[#dce6f1]">
+            <div className="mt-4 overflow-auto rounded-lg border border-[var(--color-rule-soft)]">
               <table className="w-full min-w-[760px] text-left text-[10px]">
-                <thead className={darkMode ? "bg-[#0b1428] text-[#8292ad]" : "bg-[#f3f7fc] text-[#687993]"}>
+                <thead className={darkMode ? "bg-[var(--color-table-head-dark)] text-[var(--color-muted-table)]" : "bg-[var(--color-table-head-light)] text-[var(--color-muted-2)]"}>
                   <tr>
                     {['Employee ID', 'Full Name', 'Role / Designation', 'Department', 'Site', 'Start Date', 'Status'].map((heading) => (
                       <th key={heading} className="px-3 py-3 font-bold">{heading}</th>
@@ -399,22 +399,22 @@ export default function RosterListPage() {
                 </thead>
                 <tbody>
                   {filteredEmployees.map((employee) => (
-                    <tr key={employee.employeeCode} className={`border-t ${darkMode ? "border-[#273653]" : "border-[#edf1f7]"}`}>
+                    <tr key={employee.employeeCode} className={`border-t ${darkMode ? "border-[var(--color-rule-table)]" : "border-[var(--color-rule-row-2)]"}`}>
                       {employeeValues(employee).map((field, index) => <td key={`${employee.employeeCode}-${index}`} className="px-3 py-3">{field}</td>)}
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {filteredEmployees.length === 0 && <p className="p-8 text-center text-xs text-[#687993]">No employees to export.</p>}
+              {filteredEmployees.length === 0 && <p className="p-8 text-center text-xs text-[var(--color-muted-2)]">No employees to export.</p>}
             </div>
             <div className="mt-5 flex justify-end gap-2">
-              <button type="button" onClick={() => setExportPreviewOpen(false)} className="rounded-lg border border-[#dce6f1] px-4 py-2 text-xs font-semibold">
+              <button type="button" onClick={() => setExportPreviewOpen(false)} className="rounded-lg border border-[var(--color-rule-soft)] px-4 py-2 text-xs font-semibold">
                 Cancel
               </button>
-              <button type="button" onClick={downloadPdf} disabled={filteredEmployees.length === 0} className="rounded-lg border border-[#2F6798] px-4 py-2 text-xs font-bold text-[#2F6798] disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" onClick={downloadPdf} disabled={filteredEmployees.length === 0} className="rounded-lg border border-[var(--color-accent)] px-4 py-2 text-xs font-bold text-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-50">
                 Download PDF
               </button>
-              <button type="button" onClick={downloadExport} disabled={filteredEmployees.length === 0} className="rounded-lg bg-[#2F6798] px-4 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" onClick={downloadExport} disabled={filteredEmployees.length === 0} className="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">
                 Download CSV
               </button>
             </div>
@@ -426,5 +426,5 @@ export default function RosterListPage() {
 }
 
 function RosterMetric({ label, value, color }: { label: string; value: string; color: string }) {
-  return <article className="account-panel flex items-center gap-3 rounded-xl border border-[#e7edf5] bg-white p-4 shadow-sm"><span className="grid h-11 w-11 place-items-center rounded-full" style={{ backgroundColor: `${color}1b`, color }}><UsersRound size={21} /></span><div><p className="text-xs font-medium text-[#687993]">{label}</p><strong className="mt-1 block text-2xl tabular-nums text-[#182746]">{value}</strong></div></article>;
+  return <article className="account-panel flex items-center gap-3 rounded-xl border border-[var(--color-rule-card)] bg-white p-4 shadow-sm"><span className="grid h-11 w-11 place-items-center rounded-full" style={{ backgroundColor: `${color}1b`, color }}><UsersRound size={21} /></span><div><p className="text-xs font-medium text-[var(--color-muted-2)]">{label}</p><strong className="mt-1 block text-2xl tabular-nums text-[var(--color-ink-strong)]">{value}</strong></div></article>;
 }

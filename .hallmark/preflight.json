@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-25",
+  "genre": "modern-minimal",
+  "scope": "app",
+  "depth": "polish",
+  "signals": [
+    { "path": "package.json:18-31", "fact": "Next 16.4.5, React 19.2.8, Tailwind 4, ESLint 9, TypeScript 5" },
+    { "path": "src/app/layout.tsx:3-14", "fact": "Geist and Geist Mono registered as CSS variables" },
+    { "path": "src/app/tokens.css:24-41", "fact": "soft-white/CTNP-blue palette, Geist faces, shared type scale" },
+    { "path": "src/app/tokens.css:44-171", "fact": "spacing, timing, layer, and colour role tokens" },
+    { "path": "src/app/base.css:6-25", "fact": "overflow-x clip, focus ring, reduced-motion fallback, slot rules" },
+    { "path": "src/app/globals.css:1-5", "fact": "existing Hallmark app-screen stamp" }
+  ],
+  "no_design_md": true,
+  "no_brand_spec": true,
+  "render_tier": "unavailable: puppeteer-core and Chrome/Chromium not installed; static sloplint only",
+  "finish_review": "in-thread: recapture required because render screenshots are unavailable; static source review passed with no new findings",
+  "inferred": {
+    "material": "Live account, roster, and workforce data already in the app; no invented numbers, quotes, logos, or photographs",
+    "audience": "Internal operations staff managing accounts and employee movement",
+    "use": "Read account status and open or manage the right account",
+    "tone": "utilitarian, quiet, dense, trustworthy"
+  },
+  "preserved": [
+    "Existing page hierarchy, sidebar/top-bar shell, navigation, copy, data wiring, and auth flows",
+    "Geist/Geist Mono faces, soft-white and CTNP-blue palette, 16px base scale, and light/dark states",
+    "All screens behind sign-in remain app screens, not marketing pages"
+  ],
+  "introduced": [
+    "Token declarations for every remaining colour literal, including gradients, shadows, and trash-zone states",
+    "Check stamps naming built: Hallmark, theme: brand, redesign: polish",
+    "data-js marker set before paint so hidden-at-rest panels still appear with scripting off",
+    "Token-based spacing for header and analytics padding; 100vw sidebar width replaced with bounded width",
+    "Sentence-case labels and controls in place of tracked capitals; en dash removed from roster pagination"
+  ],
+  "structural_notes_only": [
+    { "path": "src/app/globals.css:726", "note": "Sidebar is a fixed 220px rail on large screens; changing the shell would need a separate redesign." },
+    { "path": "src/features/dashboard/Dashboard.tsx:316", "note": "Dashboard opens with a responsive account-card grid; no section order was changed in this polish." },
+    { "path": "src/features/accounts/RosterListPage.tsx:224", "note": "Roster remains a table-first work screen; table density and pagination were kept." }
+  ]
+}
